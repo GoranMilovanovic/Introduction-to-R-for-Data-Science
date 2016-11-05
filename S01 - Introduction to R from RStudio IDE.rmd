@@ -8,6 +8,54 @@
 #### [Goran S. Milovanović](http://www.exactness.net), Phd, Data Science Mentor at [Springboard](https://www.springboard.com/workshops/data-science), [Data Science Serbia](http://www.datascience.rs)
 #### [ing Branko Kovač](https://rs.linkedin.com/in/kovacbranko), Data Scientist @Tradecore, Data Science Mentor at [Springboard](https://www.springboard.com/workshops/data-science), [Data Science Serbia](http://www.datascience.rs)
 
+### Installing R and RStudio
+
+**If you are using Windows 7/8/10:**
+
+1. Download the binary setup file for R from the following [link](https://cran.r-project.org/bin/windows/base/R-3.3.2-win.exe)
+
+2. Open the downloaded file and install R by following installation instructions.
+
+3. Download the binary setup file for RStudio from the following [link](https://download1.rstudio.org/RStudio-1.0.44.exe)
+
+4. Open the downloaded file and install RStudio by following installation instructions.
+
+5. Find RStudio shortcut in Start Menu and open RStudio by clicking on it.
+
+**If you are using Apple OS X:** 
+
+1. Check OS X version: Choose “About This Mac” option from the Apple menu; the version number appears below the name.
+
+2. Download the binary setup file for R from the following link: 	
+
++ for OS X 10.9 and newer, [this link](https://cran.r-project.org/bin/macosx/R-3.3.2.pkg), or
+
++ for OS X 10.6 – OS X 10.8, [this link](https://cran.r-project.org/bin/macosx/R-3.2.1-snowleopard.pkg)
+
+3. Open the downloaded file and install R by following installation instructions.
+
+4. Download the binary setup file for RStudio from the following [link](https://download1.rstudio.org/RStudio-1.0.44.dmg)
+
+5. Open the downloaded file and install RStudio by dragging the icon to Applications folder.
+
+6. Find RStudio icon in Applications folder and open RStudio by clicking on it.
+
+**Linux Ubuntu 16.04 Xenial Xerus**
+
+1. To install R on Ubuntu 16.04 Xenial Xerus, follow the instructions [here](https://www.r-bloggers.com/how-to-install-r-on-linux-ubuntu-16-04-xenial-xerus/)
+
+2. To install RStudio, visit [Download RStudio](https://www.rstudio.com/products/rstudio/download/) pages, pick the approprite (32/64 bit) version, download it, install it using any package manager; or,
+
+3. using [gdebi](https://apps.ubuntu.com/cat/applications/precise/gdebi/), open Terminal and type (N.B. 64 bit version in example, please change accordingly):
++ sudo apt-get install gdebi-core
++ wget https://download1.rstudio.org/rstudio-0.99.896-amd64.deb
++ sudo gdebi -n rstudio-0.99.896-amd64.deb
++ rm rstudio-0.99.896-amd64.deb
+
+4. Note: *The procedure follows the similar lines for previous versions of Ubuntu*
+
+Ok. Now when we have our computing toy installed and ready, let's see what it is about.
+
 ***
 ```{r echo=T}
 # clear workspace
