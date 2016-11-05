@@ -76,4 +76,6 @@ boolean <- c(TRUE, FALSE)
 data("mtcars")
 ```
 
+---
 #### [Data Science Serbia](http://www.datascience.rs)
+---
