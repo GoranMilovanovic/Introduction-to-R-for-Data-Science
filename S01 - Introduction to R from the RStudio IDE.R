@@ -57,6 +57,7 @@ installed.packages() # list of installed packages
 numbers <- c(1,2,3,4,5)
 words <- c("data", "science", "r")
 boolean <- c(TRUE, FALSE)
+my_list <- list(words, numbers, boolean)
 
 data("mtcars")
 
