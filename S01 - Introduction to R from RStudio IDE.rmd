@@ -1,13 +1,3 @@
----
-author: Goran S. Milovanovic"
-date: "November 5, 2016"
-output: html_document
----
-
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-```
-
 # Introduction to R for Data Science
 ## Session 01: Introduction to R from RStudio IDE
 ### Organized by: [Data Science Serbia](http//:www.datascience.rs) and [Startit](http://en.startit.rs)
@@ -109,4 +99,4 @@ data("mtcars")
 ```
 
 ***
-#### [Data Science Serbia](http://www.datascience.rs)
+#### [Data Science Serbia](http://www.datascience.rs) 2016.
