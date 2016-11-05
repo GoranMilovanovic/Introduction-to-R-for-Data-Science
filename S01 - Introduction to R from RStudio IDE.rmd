@@ -8,8 +8,8 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-# 'Introduction to R for Data Science'
-## 'Session 01: Introduction to R from RStudio IDE'
+# Introduction to R for Data Science
+## Session 01: Introduction to R from RStudio IDE
 ### Organized by: [Data Science Serbia](http//:www.datascience.rs) and [Startit](http://en.startit.rs)
 ***
 
