@@ -1,16 +1,28 @@
 # Introduction to R for Data Science
-## Session 01: Introduction to R from RStudio IDE
-### Organized by: [Data Science Serbia](http//:www.datascience.rs) and [Startit](http://en.startit.rs)
+### Session 01: Introduction to R from RStudio IDE
+
+11/07/2016, Belgrade, Serbia
+
+Organized by: [Data Science Serbia](http//:www.datascience.rs) and [Startit](http://en.startit.rs)
+
 ***
 
 ## Lecturers
 
-#### [Goran S. Milovanović](http://www.exactness.net), Phd, Data Science Mentor at [Springboard](https://www.springboard.com/workshops/data-science), [Data Science Serbia](http://www.datascience.rs)
-#### [ing Branko Kovač](https://rs.linkedin.com/in/kovacbranko), Data Scientist @Tradecore, Data Science Mentor at [Springboard](https://www.springboard.com/workshops/data-science), [Data Science Serbia](http://www.datascience.rs)
 
-### Installing R and RStudio
+![](/home/goran/Work/_DataScienceActual/DataScienceZajednica/IntroR_Autumn2016/Introduction to R for Data Science - Autumn 2016/img/GoranSMilovanovic.jpg)
 
-**If you are using Windows 7/8/10:**
+#### [Goran S. Milovanović](http://www.exactness.net), Phd  
+#### Data Science Mentor at [Springboard](https://www.springboard.com/workshops/data-science), [Data Science Serbia](http://www.datascience.rs)  
+![](/home/goran/Work/_DataScienceActual/DataScienceZajednica/IntroR_Autumn2016/Introduction to R for Data Science - Autumn 2016/img/BrankoKovac.jpg)  
+
+#### [ing Branko Kovač](https://rs.linkedin.com/in/kovacbranko)
+#### Data Scientist @Tradecore, Data Science Mentor at [Springboard](https://www.springboard.com/workshops/data-science), [Data Science Serbia](http://www.datascience.rs)
+***
+
+### A. Installing R and RStudio
+
+**Windows 7/8/10:**
 
 1. Download the binary setup file for R from the following [link](https://cran.r-project.org/bin/windows/base/R-3.3.2-win.exe)
 
@@ -22,15 +34,14 @@
 
 5. Find RStudio shortcut in Start Menu and open RStudio by clicking on it.
 
-**If you are using Apple OS X:** 
+**Apple OS X:** 
 
 1. Check OS X version: Choose “About This Mac” option from the Apple menu; the version number appears below the name.
 
 2. Download the binary setup file for R from the following link: 	
 
-+ for OS X 10.9 and newer, [this link](https://cran.r-project.org/bin/macosx/R-3.3.2.pkg), or
-
-+ for OS X 10.6 – OS X 10.8, [this link](https://cran.r-project.org/bin/macosx/R-3.2.1-snowleopard.pkg)
+>>###### **for OS X 10.9 and newer, [this link](https://cran.r-project.org/bin/macosx/R-3.3.2.pkg)**, or  
+>>###### **for OS X 10.6 – OS X 10.8, [this link](https://cran.r-project.org/bin/macosx/R-3.2.1-snowleopard.pkg)**
 
 3. Open the downloaded file and install R by following installation instructions.
 
@@ -47,16 +58,20 @@
 2. To install RStudio, visit [Download RStudio](https://www.rstudio.com/products/rstudio/download/) pages, pick the approprite (32/64 bit) version, download it, install it using any package manager; or,
 
 3. using [gdebi](https://apps.ubuntu.com/cat/applications/precise/gdebi/), open Terminal and type (N.B. 64 bit version in example, please change accordingly):
-+ sudo apt-get install gdebi-core
-+ wget https://download1.rstudio.org/rstudio-0.99.896-amd64.deb
-+ sudo gdebi -n rstudio-0.99.896-amd64.deb
-+ rm rstudio-0.99.896-amd64.deb
+
+>>###### **sudo apt-get install gdebi-core **  
+>>###### **wget https://download1.rstudio.org/rstudio-0.99.896-amd64.deb **  
+>>###### **sudo gdebi -n rstudio-0.99.896-amd64.deb **  
+>>###### **rm rstudio-0.99.896-amd64.deb **  
 
 4. Note: *The procedure follows the similar lines for previous versions of Ubuntu*
 
-Ok. Now when we have our computing toy installed and ready, let's see what it is about.
+***  
 
-***
+### B. R Playground  
+
+Ok. Now when we have our computing toy installed and ready, let's see what it is about.  
+
 ```{r echo=T}
 # clear workspace
 rm(list=ls())
@@ -64,6 +79,7 @@ rm(list=ls())
 ls()
 ```
 
+Basically, R is an calculator:
 ```{r echo=T}
 # R as a calculator
 2+2
@@ -72,7 +88,9 @@ a <- 1/3
 b = 7
 a + b
 ```
+And more or less, that would be all. There's numbers in R, there's arithmetic in R, go do Data Science in R... Just kidding of course.
 
+You need to know what's your working directory:
 ```{r echo=T}
 # what is my working directory?
 getwd()
@@ -104,7 +122,7 @@ rm(list=ls())
 ```
 
 ***
-### How to install packages in RStudio
+### C. How to install CRAN packages in R and RStudio
 
 After you have successfully installed both **R** and **RStudio**, you are ready to start programming in R.
 R has a plenty of built-in functions, but most of the time additional functions are needed. The true power of this programming language lies in the support from approximately 10,000 additional packages that can be installed to widen its functionality.
@@ -117,8 +135,8 @@ To install the packages that we are going to use during our course, please follo
 
 3. There are two ways to do it (actually, there are more than two ways, but let’s stick with the following two):
 
-+ a. In the RStudio R console (the lower left quadrant of your RStudio workspace), type: *install.packages(‘dplyr’)*
-+ b. From the *Tools* menu in RStudio, select *Instal Packages*, then start typing the package name and select it from the list
+>>######- **In the RStudio R console (the lower left quadrant of your RStudio workspace), type: install.packages(‘dplyr’)**  
+>>######- **From the Tools menu in RStudio, select Instal Packages, then start typing the package name and select it from the list**
 
 4. Most of the CRAN packages - those found in the standard, official R repository, called CRAN (Comprehensive R Archive Network) can be installed by following the standard procedure (described in Step 3). However, besides this basic package installation procedure, R packages from various sources can be installed in other ways as well. During the workshop we will demonstrate how to install R packages from the [GitHub](https://github.com/) repository (which is not R specific) using the [devtools](https://github.com/hadley/devtools) package from R, and how to install packages from the [Bioconductor](https://www.bioconductor.org/) repository.
 
@@ -138,13 +156,202 @@ install.packages("dplyr")
 installed.packages() # list of installed packages
 ```
 
+***
+### D. The Shape of Things to Come
+
 ```{r echo=T}
 # The shape of things to come:
 numbers <- c(1,2,3,4,5)
 words <- c("data", "science", "r")
 boolean <- c(TRUE, FALSE)
 data("mtcars")
+head(mtcars,5)
 ```
+
+```{r echo=T}
+# define a function in R:
+
+factorial <- function(x) {
+  if (x == 0 | x == 1) {
+    return(1)
+  }
+  else {
+    return(x*factorial(x-1))
+    }
+}
+
+# calls to factorial():
+factorial(5)
+factorial(10)
+factorial(100)
+
+# a vector of type numeric obtained from a sequence:
+x <- seq(0,30,1)
+
+# applying the non-vectorized factorial() function to a vector x:
+xFactorials <- unlist(lapply(x, function(x) {factorial(x)}))
+
+# a {base} R plot
+plot(x,xFactorials,
+     xlab = "Integers",
+     ylab = "Factorials",
+     main = "Insane Plot",
+     cex.main = .85)
+lines(x,xFactorials, col="red")
+```
+
+``` {r echo = T}
+# R is a vector programming language. All programming languages dream of becoming
+# vector languages one day. For example, to do vector programming in Python, you first need
+# a package called NumPy to turn it into MATLAB, then a package named Pandas to turn it into R.
+# Just kidding :) - we love Python too and have the highest of respect only for the
+# Python community in Data Science. But R is a "natural" vector programming language:
+
+# create 100 random deviates from the Uniform on [0,1]
+x <- runif(100,0,1)
+
+# ask for *each element in x* whether it is >= .5 or not:
+x>=.5
+
+# Where's the function? Isn't >= an operator?
+# R is a functional programming language too. Thus:
+logical1 <- '>='(x,.5)
+logical2 <- x>=.5
+which(logical1 != logical2) # none: integer(0)
+
+# Back to vectorized functions in R; similarly, we have:
+x <- seq(2,100,2)
+x2 <- sqrt(x)
+x2
+```
+
+Ok. Let strech its legs now:
+
+``` {r echo = T}
+# PCA
+library(psych)
+library(FactoMineR)
+library(ggplot2)
+dataSet <- bfi[,1:25]
+dim(dataSet)
+# replace NA w. respective column means
+for(i in 1:ncol(dataSet)){
+  dataSet[is.na(dataSet[,i]), i] <- mean(dataSet[,i], na.rm = TRUE)
+}
+colnames(dataSet)
+```
+
+``` {r echo}
+# plot correlation matrix
+library(corrplot)
+corrplot(cor(dataSet),
+         tl.col='black',
+         tl.cex=.75)
+```
+
+``` {r echo=T}
+# perform PCA w. PCA() from {factoMineR}
+pcaSolution <- PCA(dataSet,
+                   ncp=5,
+                   scale.unit=F,
+                   graph=FALSE)
+# Eigenvalues:
+eigenvalues <- pcaSolution$eig$eigenvalue
+names(eigenvalues) <- paste("Component: ", seq(1,length(eigenvalues)), sep = "")
+eigenvalues
+```
+``` {r echo = T}
+# Screeplot:
+screePlot <- data.frame(Component = rownames(pcaSolution$eig),
+                        Eigenvalue = pcaSolution$eig$eigenvalue,
+                        stringsAsFactors = F)
+ggplot(screePlot,
+       aes(x = seq(1,length(pcaSolution$eig$eigenvalue),1),
+           y = Eigenvalue),
+       label = Component) +
+  geom_path(color="blue") +
+  geom_point(color="blue",size = 2) +
+  geom_point(color="white", size = 1.5) + 
+  xlab("Component") + 
+  ggtitle("Screeplot") +
+  theme_bw()
+```
+
+``` {r echo = T}
+# Plot loadings on PC1 and PC2
+# get item coordinates
+coordinates <- pcaSolution$var$coord
+# compute loadings (dividing coordinates by sqrt(coord_eigenvalue))
+for (i in 1:5) {
+  coordinates[,i] <- coordinates[,i]/sqrt(eigenvalues[i])
+}
+colnames(coordinates) <- paste("Component",seq(1,dim(coordinates)[2],1),sep="")
+category <- paste("Component ",unname(apply(coordinates,1,function(x){which(abs(x)==max(abs(x)))})),sep="")
+loading <- unname(apply(coordinates,1,function(x){x[which(abs(x)==max(abs(x)))]}))
+# prepare data.frame for {ggplot2}
+plotTable <- as.data.frame(coordinates)
+plotTable$Category <- category
+plotTable$Loading <- loading
+plotTable$Label <- rownames(plotTable)
+# plot factor loadings w. {ggplot2}:
+# PCA Projection on Components 1 and 2
+ggplot(plotTable,aes(x = Component1,
+                     y = Component2,
+                     size = Loading,
+                     fill = Category,
+                     label = Label)) +
+  geom_point(color="black",shape=21,alpha=0.75) +
+  geom_text(hjust = 1.5, vjust = -1, size = 3.5) +
+  theme_bw() +
+  scale_size(range = c(1,6)) +
+  scale_fill_brewer(palette = "Set1") +
+  theme(legend.position="right") +
+  theme(legend.key = element_rect(colour = NA)) +
+  theme(legend.key.size=unit(1,"cm")) +
+  theme(legend.background = element_rect(colour = "white", fill="white")) +
+  theme(panel.border = element_rect(linetype = "solid", colour = "white", fill="NA")) +
+  theme(panel.background = element_rect(fill = "white")) +
+  theme(plot.background = element_blank()) +
+  theme(axis.text.x = element_text(size=11,colour = "black")) +
+  theme(axis.text.y = element_text(size=11,colour = "black")) +
+  theme(panel.grid.minor = element_blank()) +
+  theme(panel.grid.major = element_blank()) +
+  xlab("Component 1") + ylab("Component 2") +
+  ggtitle("PCA: Projection on Components 1 and 2\n")
+```
+
+``` {r echo = T}
+# plot loadings w. {ggplot2}:
+# PCA Projection on Components 1 and 3
+ggplot(plotTable,aes(x = Component1,
+                     y = Component3,
+                     size = Loading,
+                     fill = Category,
+                     label = Label)) +
+  geom_point(color="black",shape=21,alpha=0.75) +
+  geom_text(hjust = 1.5, vjust = -1, size = 3.5) +
+  theme_bw() +
+  scale_size(range = c(1,6)) +
+  scale_fill_brewer(palette = "Set1") +
+  theme(legend.position="right") +
+  theme(legend.key = element_rect(colour = NA)) +
+  theme(legend.key.size=unit(1,"cm")) +
+  theme(legend.background = element_rect(colour = "white", fill="white")) +
+  theme(panel.border = element_rect(linetype = "solid", colour = "white", fill="NA")) +
+  theme(panel.background = element_rect(fill = "white")) +
+  theme(plot.background = element_blank()) +
+  theme(axis.text.x = element_text(size=11,colour = "black")) +
+  theme(axis.text.y = element_text(size=11,colour = "black")) +
+  theme(panel.grid.minor = element_blank()) +
+  theme(panel.grid.major = element_blank()) +
+  xlab("Component 1") + ylab("Component 3") +
+  ggtitle("PCA: Projection on Components 1 and 3\n")
+```
+
+***
+## Readings for Session 2:
+
++ Chapters 1 to 5 from [Norman Matloff's The Art of R Programming](http://heather.cs.ucdavis.edu/~matloff/132/NSPpart.pdf)
 
 ***
 #### [Data Science Serbia](http://www.datascience.rs) 2016.
