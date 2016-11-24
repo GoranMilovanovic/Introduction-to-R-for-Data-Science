@@ -2,7 +2,7 @@
 # Course Notes :: Autumn 2016
 
 Lecturers: [Goran S. Milovanovic](http://www.exactness.net/) &amp; [Branko Kovac](https://www.linkedin.com/in/kovacbranko)  
-Organized by Data Science Serbia (www.datascience.rs) + Startit (www.en.startit.rs), Belgrade, Autumn 2016.
+Organized by [Data Science Serbia](www.datascience.rs) + [Startit](www.en.startit.rs), Belgrade, Autumn 2016.
 
 **Description.** The course encompasses an introduction to R data structures, control flow, and functions, and then progresses towards the basics of the Linear Model in R: linear correlation, simple and multiple linear regression, t-tests, and ANOVA. Probability functions are discussed in a separate sessions that preceeds the modeling phase. Elementary data vizualization with {base} graphics, {lattice}, and {ggplot2}, as well as data wrangling with {dplyr} and {tidyr} are also covered. Several exercises aim at better understanding of doing simulation and model fitting in R. More advanced material on Generalized Linear Models, General Optimization Methods, and Dimensionality Reduction with PCA and MDS will be added gradually. Depending on the participant's interests, we also may add something on text-mining with {tm} and LDA from {topicmodels}, as well as other more typical machine learning stuff (Decision Trees and Random Forests, SVM, etc).
 
@@ -11,4 +11,4 @@ Organized by Data Science Serbia (www.datascience.rs) + Startit (www.en.startit.
 + The course is organized in Sessions (S01, S02, ...) and Exercises (E01, E02, ...).
 + Each Session/Exercise is related to three files: an .R script, an .Rmd Rmarkdown file, and a knitted .html file. These three files share a common prefix relating them to the respective Session/Exercise.
 
-**Contact.** The course organized in cooperation of Data Science Serbia (www.datascience.rs) and Startit (www.en.startit.rs) in Belgrade is free, while Mr. Kovac and I volunteer. However, all course material and learning methods have already been applied in professional settings. If you are an individual, represent an organization, or a company, you are welcome to contact me to learn more about the commercial verion of this course, e-mail: **goran.s.milovanovic@gmail.com** 
+**Contact.** The course organized in cooperation of [Data Science Serbia](www.datascience.rs) and [Startit](www.en.startit.rs) in Belgrade is free, while Mr. Kovac and I volunteer. However, all course material and learning methods have already been applied in professional settings. If you are an individual, represent an organization, or a company, you are welcome to contact me to learn more about the commercial verion of this course, e-mail: **goran.s.milovanovic@gmail.com** 
