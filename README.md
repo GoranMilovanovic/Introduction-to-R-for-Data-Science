@@ -19,7 +19,7 @@ Organized by [Data Science Serbia](www.datascience.rs) + [Startit](www.en.starti
 
 ------
 
-**Photo**
+**Course photos**
 
 **Photo 1A. Introduction to R for Data Science** :: Startit Centre, Savska 5, Belgrade, May 2016.
 
