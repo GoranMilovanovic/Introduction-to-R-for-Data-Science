@@ -1,0 +1,364 @@
+# Introduction to R for Data Science
+### Exercise 01: Normal Estimates from Truncated Samples
+
+11/21/2016, Belgrade, Serbia
+
+Organized by: [Data Science Serbia](http//:www.datascience.rs) and [Startit](http://en.startit.rs)
+
+***
+
+## Lecturers
+
+
+![](img/GoranSMilovanovic.jpg)
+
+#### [Goran S. Milovanović](http://www.exactness.net), Phd  
+#### Data Science Mentor at [Springboard](https://www.springboard.com/workshops/data-science), [Data Science Serbia](http://www.datascience.rs)  
+![](img/BrankoKovac.jpg)  
+
+#### [ing Branko Kovač](https://rs.linkedin.com/in/kovacbranko)
+#### Data Scientist @Tradecore, Data Science Mentor at [Springboard](https://www.springboard.com/workshops/data-science), [Data Science Serbia](http://www.datascience.rs)
+
+***
+
+### Bias and Variance of an Estimate from Truncated Normal Samples
+
+First we load {ggplot}, a fantastic R graphics library. We will combine {base} and {ggplot2} graphics in this Exercise. Maybe it's too early to study {ggplot2} and R's plotting capabilities in general, but it wouldn't hurt if you try to figure out at least the basic plotting syntax at this point. 
+
+``` {r echo = T}
+## -- clear all
+rm(list=ls())
+## -- ggplot2
+library(ggplot2)
+```
+
+Let' pretend that we now that some variable of interest follows (a) a Normal distribution in the population, and (b) that we know its distribution parameters - the population *mean* and *variance* - with certainty. This is not a common situation in scientific research, where we do not know  the population parameters and then apply the principles of **statistical estimation theory** in order to figure them out. However, assuming that the parameters are known is a common first step in learning estimation theory. We will entertain ourselves with **sim-fit loops** (without writing a single loop in R!) a bit here: (1) we first assume that we know the population, (2) then we simulate it == we draw random samples from it, and then (3) we fit the model of the population back to these samples to see what happens. 
+
+``` {r echo = T}
+## -- Assume Normal Distribution in the Population.
+## -- Assume we know the true population mean and variance:
+mu <- 5
+sigma <- 1.2
+sdev <- sqrt(sigma)
+sdev
+```
+
+An interesting discussion on trimmed means was started during Session 03 on November 21/2016:
+
+``` {r echo = T}
+x <- rnorm(100000,mu,sigma) # a random sample ~ Normal(Mean = 5, StdDev = 1.2)
+mean(x)
+```
+
+Now let's trim **x** before mean calculation:
+
+``` {r echo = T}
+mean(x, trim = .1) # trim = .1 defines the fraction of x that will be removed from both tails
+```
+
+A rather small change in the estimate? In this exercise, we will take a closer look at the behavior of Normal estimates from truncated samples. Along the way, we will learn about some interesting R functions that we use in mathematical statistics and data science a lot. For example, `curve()` comes handy when we have a defined mathematical function to plot:
+
+``` {r echo = T}
+## -- let's plot the Population Normal:
+curve(dnorm(x,mu,sdev),
+      from = 0,
+      to = 10, n = 1000,
+      col = "red",
+      main = "In the Population: Normal",
+      ylab = "Density",
+      cex.main = .85)
+# in R: curve() is for ploting functions: ?curve
+# dnorm is for Normal (Gaussian) Density: ?dnorm
+# , and then: ?pnorm, ?rnorm, ?qnorm
+```
+
+The `curve()` function is a part of R's {base} graphics functionality. R can do many more. Arguably, nothing compares with R in the world of data visualisatio; but you need to begin by making small steps since things there can get really complicated.
+
+**Very important:** find some time to play around with `dnorm()`,`pnorm()`,`rnorm()`, and `qnorm()`. They are all probability functions. There will be a whole session on probability functions in R during this course, but it wouldn't hurt you to take a look ahead.
+
+``` {r echo = T}
+## -- Good. Let's draw some samples now:
+s1 <- rnorm(100000, mu, sdev)
+head(s1)
+```
+
+What `rnorm()` does is the following: it takes a vector of 100,000 (in this case) elements and populates it with random deviates from the Gaussian with *mu* and *sigma* as its parameters. Please take into your consideration that `dnorm()`,`pnorm()`,`rnorm()`, and `qnorm()` all take the mean and **standard deviation** as their parameters, and **not variance**. We have termed the populaton standard deviation `sdev` here, and we use (somewhat incorrectly) `sigma` for population variance (it should be: **sigma^2^**, since standard deviation is the square root of variance, right...).
+
+What are the sample statistics == **the estimates of the population parameters** from this sample alone?
+
+``` {r echo = T}
+# Estimates?
+mean(s1) # sample mean
+```
+
+``` {r echo = T}
+sd(s1) # sample standard deviation
+```
+
+``` {r echo = T}
+var(s1) # sample variance, not so bad...
+```
+
+What we will do next is the following. We draw 1,000 random samples from our theoretical, population distribution, using `mu` and `sigma` as its parameters, still pretending that we know their values with certainty. Each sample has a size of 100,000. Each time we draw a sample, we take its mean and its variance and store into the `estimates` data frame:  
+
+``` {r echo = T}
+## --  Ok. Now...
+estimates <- data.frame(
+  mean = sapply(seq(1:1000), function(x){
+    mean(rnorm(100000,mu,sdev))
+    }),
+  var = 
+    sapply(seq(1:1000), function(x){
+      var(rnorm(100000,mu,sdev))
+    })
+)
+summary(estimates)
+```
+
+*NOTE:* learn about `?sapply`. Compare `sapply()` with `lapply()` and figure out what the former does. Remember the `unlist(lapply(x,fun(x)))` syntax?
+
+In estimation theory, the *estimator bias* is defined as the difference between the expected value of the estimate (i.e. its mean) and its true value:
+
+``` {r echo = T}
+## --  How biased are these estimates?
+mean_Bias <- mean(estimates$mean) - mu
+mean_Bias
+```
+
+And what about the bias of the variance estimate?
+
+``` {r echo = T}
+var_Bias <- mean(estimates$var) - sigma
+var_Bias
+```
+
+Did we forget about something? Go check whether R's `var` and `mean` compute (a) **the sample** variance and standard deviation, respectively, or (b) **the population** variance and standard deviation, respectively. Which should be used in order to **estimate** the variance? Why?
+
+Let's see now what happens when we truncate the samples from this normal distribution before estimation:
+
+``` {r echo = T}
+## --  Ok. Now... truncating!
+estimatesTrunc <- data.frame(
+  mean = sapply(seq(1:1000), function(x){
+    rSample <- rnorm(100000, mu, sdev)
+    quants <- quantile(rSample,c(.1,.9))
+    rSample <- rSample[which(rSample>quants[1] & rSample<quants[2])]
+    mean(rSample)
+  }),
+  var = sapply(seq(1:1000), function(x){
+    rSample <- rnorm(100000, mu, sdev)
+    quants <- quantile(rSample,c(.1,.9))
+    rSample <- rSample[which(rSample>quants[1] & rSample<quants[2])]
+    var(rSample)
+    })
+  )
+summary(estimatesTrunc)
+```
+
+In the previous code chunk, the following steps are performed:
+
++ First, `rSample`, a random sample of size 100,000 is drawn from **Normal(mu,sigma)**;
++ Second, the 10th and 90th distribution percentiles are computed by using R's `quantile()` function: go learn about it `?quantile`;
++ Third, `rSample` is truncated; by `rSample[which(rSample>quants[1] & rSample<quants[2])]` we keep only those elements of it which are higher than the sample's 10th percentile and lower than its 90th percentile; go learn about `which()` which is one the most important functions in efficient R programming at all;
++ Fourth, the truncated sample mean and variance are computed and stored in the `estimatesTrunc` data frame.
+
+Now, we want to learn about the bias of the estimates obtained from the truncated samples: 
+
+``` {r echo = T}
+# And how biased are these estimates?
+mean_BiasTrunc <- mean(estimatesTrunc$mean) - mu
+mean_BiasTrunc
+```
+
+``` {r echo = T}
+var_BiasTrunc <- mean(estimatesTrunc$var) - sigma
+var_BiasTrunc
+```
+
+Let's compare the biases of the estimates obtained from untruncated and truncated samples: 
+
+``` {r echo = T}
+# Let's compare:
+mean_Bias < mean_BiasTrunc
+```
+
+``` {r echo = T}
+var_Bias < var_BiasTrunc
+```
+
+``` {r echo = T}
+# The difference?
+mean_Bias - mean_BiasTrunc
+```
+
+``` {r echo = T}
+var_Bias - var_BiasTrunc # ooops
+```
+
+As of the **estimator variances**:
+
+``` {r echo = T}
+# How about the variance of the estimates?
+var(estimates$mean)/var(estimatesTrunc$mean)
+```
+
+``` {r echo = T}
+var(estimates$var)/var(estimatesTrunc$var) # oh oh oh...
+```
+
+Catch this: the **variance of** the variance estimate from the truncated sample is seriously shrinked **relatively to** the **variance of** the variance estimate from the untruncated sample! The next chunk uses {base} R's `hist()` function to plot the distribution of the untruncated vs. truncated variance estimates from this experiment:
+
+``` {r echo = T}
+## --  Let' see: histogram()
+par(mfcol=c(1,2)) # this sets the plot parameters: 
+# R will plot with c(1,2), meaning: one row, two columns.
+# The next two plots will thus be placed next to one another.
+hist(estimates$var,20,
+     main = "Variance Estimates\n(sigma = 1.25, 20 bins)",
+     cex.main = .85,
+     xlab = "Variance",
+     xlim=c(1.15,1.25))
+hist(estimatesTrunc$var,20,
+     main = "Truncated Variance Estimates\n(sigma = 1.25, 20 bins)",
+     cex.main = .85,
+     xlab = "Variance",
+     xlim=c(.5,.6))
+par(mfcol=c(1,1)) # reset plot parameters (do NOT forget to do this)
+```
+
+Do: `?hist()`. Be careful when it comes to the `breaks` argument.
+
+We will perform another set of statistical experiments in order to figure out the relationship between the normal estimates from truncated and untruncated samples in a more systematic way.
+
+``` {r echo = T}
+## -- Another set of statistical experiments
+
+# Step 1 : Keep population sd = 1.5, vary population mean:
+sampleMeansTrunc <- sapply(seq(5,50,5), function(x) {
+  rSample <- rnorm(100000,x,1.5)
+  quants <- quantile(rSample,c(.1,.9))
+  rSample <- rSample[which(rSample>quants[1] & rSample<quants[2])]
+  mean(rSample)
+  })
+plotFrameMeans <- data.frame(theoretical = seq(5,50,5),
+                        empirical = sampleMeansTrunc)
+plotFrameMeans
+```
+
+It should be clear what has happening above by now. How did we vary the population means in the this example?
+
+Until now we have used only {base} R plots. We will switch to {ggplot2} now to demonstrate some of its functionality.
+
+``` {r echo = T}
+ggplot(plotFrameMeans, aes(x = empirical, y = theoretical)) +
+  geom_path(color="blue") + 
+  geom_point(colour="black", size = 2.5) + 
+  geom_point(colour="white", size = 2.25) +
+  xlim(0,65) + ylim(0,65) +
+  ggtitle("Empirical vs. Theoretical Std.Deviatons\nSample Truncated: q10 < x < q90") +
+  theme(title = element_text(size = 10))
+```
+
+Without dwelling into {ggplot2} deeply at this point:
+
++ the first argument to `ggplot` was the `plotFrameMeans` data frame;
++ the `aes()` part defines *plot aesthetics*, on this ocassion informing R that the column `empirical` of `plotFrameMeans` goes on the x-axis while `theoretical` goes on the y-axis;
++ `geom_path()` has linked the points produced by two `geom_point()` calls by blue lines; the two `geom_point()` calls were made in order to produce a white marker of `size = 2.25` on a black marker background of `size = 2.5` and "simulate" a marker outline;
++ `xlim` and `ylim`, as their names suggest, set the range of the x- and y-axis, respectively;
++ `ggtitle()`, obviously, does the title of the plot
++ `theme()` is used to set the values of various plot objects; we have used it to fix the size of the title text.
+
+Now, inspect the plot, and answer to this question: what is the relationship between the mean estimates obtained from untruncated and truncated samples drawn from the same population Gaussian?
+
+Good. Now we fix the mean in the population and play around with population variance:
+
+``` {r echo = T}
+# Step 2: Now keep population mean = 15, vary population variance:
+sampleVarsTrunc <- sapply(seq(1,20,1), function(x) {
+  rSample <- rnorm(100000,15,x)
+  quants <- quantile(rSample,c(.1,.9))
+  rSample <- rSample[which(rSample>quants[1] & rSample<quants[2])]
+  var(rSample)
+})
+plotFrameVars <- data.frame(population = seq(1,20,1)^2,
+                        estimated = sampleVarsTrunc)
+plotFrameVars
+```
+
+{ggplot2}, again: the red line placed in the following plot by `geom_line(aes(x = plotFrameVars$population, y = plotFrameVars$population), color = "red")` is the identity line for the population ("theoretical") variance: if the estimates were absolutely correct, they would all lie on it. 
+
+``` {r echo = T}
+ggplot(plotFrameVars, aes(y = estimated, x = population)) +
+  geom_line(aes(x = plotFrameVars$population, y = plotFrameVars$population),
+            color = "red") +
+  geom_path(color="blue") + 
+  geom_point(colour="black", size = 2.5) + 
+  geom_point(colour="white", size = 2.25) +
+  xlim(0,405) + ylim(0,405) +
+  ggtitle("Empirical vs. Theoretical Std.Deviatons\nSample Truncated: q10 < x < q90") +
+  theme(title = element_text(size = 10))
+```
+
+We repeat the experiment, but the truncate the sample at the usual -3SD < x < +3SD (approx. 99.7% of data under the Normal are found there, so it does not seem that we're really loosing too much, right?):
+
+``` {r echo = T}
+## -- What if we truncate -3SD < x < +3SD in Step 2?
+sampleVarsTrunc <- sapply(seq(3,20,1), function(x) {
+  rSample <- rnorm(100000,15,x)
+  quants <- c(-3*sd(rSample), 3*sd(rSample))
+  rSample <- rSample[which(rSample>quants[1] & rSample<quants[2])]
+  var(rSample)
+})
+plotFrameVars <- data.frame(population = seq(3,20,1)^2,
+                            estimated = sampleVarsTrunc)
+plotFrameVars
+```
+
+``` {r echo = T}
+ggplot(plotFrameVars, aes(y = estimated, x = population)) +
+  geom_line(aes(x = plotFrameVars$population, y = plotFrameVars$population),
+            color = "red") +
+  geom_path(color="blue") + 
+  geom_point(colour="black", size = 2.5) + 
+  geom_point(colour="white", size = 2.25) +
+  xlim(0,410) + ylim(0,410) +
+  ggtitle("Population vs. Sample Variance\nSample Truncated: -3SD < x < +3SD") +
+  theme(title = element_text(size = 10))
+```
+
+Finally, it should get worse if we go for -2SD < x < +2SD? Am I right?
+
+*CONTEMPLATE TRUNCATED SAMPLES DEEPLY AND DO NOT LOSE FAITH IN HUMANITY*
+
+*until Session 04, 28 Nov/2016, where we will talk about strings in R :)*
+
+``` {r echo = T}
+## -- What if we truncate -2SD < x < +2SD in Step 2?
+sampleVarsTrunc <- sapply(seq(3,20,1), function(x) {
+  rSample <- rnorm(100000,15,x)
+  quants <- c(-2*sd(rSample), 2*sd(rSample))
+  rSample <- rSample[which(rSample>quants[1] & rSample<quants[2])]
+  var(rSample)
+})
+plotFrameVars <- data.frame(population = seq(3,20,1)^2,
+                            estimated = sampleVarsTrunc)
+
+plotFrameVars
+```
+
+``` {r echo = T}
+ggplot(plotFrameVars, aes(y = estimated, x = population)) +
+  geom_line(aes(x = plotFrameVars$population, y = plotFrameVars$population),
+            color = "red") +
+  geom_path(color="blue") + 
+  geom_point(colour="black", size = 2.5) + 
+  geom_point(colour="white", size = 2.25) +
+  xlim(0,410) + ylim(0,410) +
+  ggtitle("Population vs. Sample Variance\nSample Truncated: -2SD < x < +2SD") +
+  theme(title = element_text(size = 10))
+```
+
+
+***
+
+#### [Data Science Serbia](http://www.datascience.rs) 2016.
