@@ -12,3 +12,7 @@ Organized by [Data Science Serbia](www.datascience.rs) + [Startit](www.en.starti
 + Each Session/Exercise is related to three files: an .R script, an .Rmd Rmarkdown file, and a knitted .html file. These three files share a common prefix relating them to the respective Session/Exercise.
 
 **Contact.** The course organized in cooperation of [Data Science Serbia](www.datascience.rs) and [Startit](www.en.startit.rs) in Belgrade is free, while Mr. Kovac and I volunteer. However, all course material and learning methods have already been applied in professional settings. If you are an individual, represent an organization, or a company, you are welcome to contact me to learn more about the commercial verion of this course, e-mail: **goran.s.milovanovic@gmail.com** 
+
+**Photo**
+
+![Startit, Savska 5, Belgrade :: May 2016](/img/IntroR-Startit-1.jpg)
