@@ -6,7 +6,7 @@ Organized by [Data Science Serbia](www.datascience.rs) + [Startit](www.en.starti
 
 **Description.** The course encompasses an introduction to R data structures, control flow, and functions, and then progresses towards the basics of the Linear Model in R: linear correlation, simple and multiple linear regression, t-tests, and ANOVA. Probability functions are discussed in a separate session that preceeds the modeling phase. Elementary data vizualization with {base} graphics, {lattice}, and {ggplot2}, as well as data wrangling with {dplyr} and {tidyr} are also covered. Several exercises aim at better understanding of doing simulation and model fitting in R, encompassing the demonstration of statistical experiments (nicely explained numerical simulations) in estimation theory, Bayesian inference, and more. More advanced material on Generalized Linear Models, General Optimization Methods, and Dimensionality Reduction with PCA and MDS will be added gradually. Depending on the participant's interests, we also may add something on text-mining with {tm} and LDA from {topicmodels}, as well as more typical machine learning stuff (Clustering, Decision Trees and Random Forests, SVM, etc).
 
-**Structure.**
+**Course Structure:**
 
 + The course is organized in Sessions (S01, S02, ...) and Exercises (E01, E02, ...).
 + Each Session/Exercise is related to three files: an .R script, an .Rmd Rmarkdown file, and a knitted .html file. These three files share a common prefix relating them to the respective Session/Exercise.
