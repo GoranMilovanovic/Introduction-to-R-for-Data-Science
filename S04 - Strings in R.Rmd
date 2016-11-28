@@ -1,0 +1,432 @@
+# Introduction to R for Data Science
+### Session 04: Strings in R
+
+11/28/2016, Belgrade, Serbia
+
+Organized by: [Data Science Serbia](http//:www.datascience.rs) and [Startit](http://en.startit.rs)
+
+***
+
+## Lecturers
+
+
+![](img/GoranSMilovanovic.jpg)
+
+#### [Goran S. Milovanović](http://www.exactness.net), Phd  
+#### Data Science Mentor at [Springboard](https://www.springboard.com/workshops/data-science), [Data Science Serbia](http://www.datascience.rs)  
+![](img/BrankoKovac.jpg)  
+
+#### [ing Branko Kovač](https://rs.linkedin.com/in/kovacbranko)
+#### Data Scientist @Tradecore, Data Science Mentor at [Springboard](https://www.springboard.com/workshops/data-science), [Data Science Serbia](http://www.datascience.rs)
+
+***
+
+### A. Introduction to Strings in R
+
+In this session we will provide a very short and concise overview of some of the R's functionality for string processing. The later is found among the most interesting and difficult topics in computer science. On the other hand, the work of a contemporary Data Scienctist - a practitioner who needs to invest time and resources to get its data sets cleaned and properly formatted for mathematical modeling - is heavily loaded with text and string processing steps. Many data sources that are available out there provide only unstructured, or semi-structured data, and that's were the skills of string handling, text processing, and, finally, data wrangling (next session) come into play. The caveat here is that string processing is a *huge* domain in itself, and that is why we can provide an overview and an introduction here. It's one of those things were a disciple becomes an expert by necessity, and were progress really means *practice*. 
+
+To go beyond this session: [Gaston Sanchez's "Handling and Processing Strings in R"](http://gastonsanchez.com/Handling_and_Processing_Strings_in_R.pdf) is probably the best that is out there.
+
+``` {r echo=T}
+# clear all
+rm(list=ls())
+
+# libraries
+library(stringr)
+```
+
+On {stringr}, from [Introduction to stringr, 2016-08-19](https://cran.r-project.org/web/packages/stringr/vignettes/stringr.html): "*Simplifies string operations by eliminating options that you don’t need 95% of the time (the other 5% of the time you can functions from base R or stringi)*" - and it reallly does. Now,
+
+``` {r echo=T}
+library(stringi)
+
+# How many functions there are in {stringi}?
+length(ls("package:stringi"))
+```
+
+Two hundred and thirty four functions to work with string in {stringi} - that should do, right? Add it up to 38 functions from {stringr}, then R's {base} functionality, and you get to the estimate of the size of R's string universe, or at least approximatelly.
+
+Kick it:
+
+``` {r echo=T}
+# strings in R are character vectors
+string_1 <- "Hello world"
+string_2 <- "Sun shines!"
+string_1
+string_2
+is.character(string_1) # TRUE
+as.character(200*5)
+as.numeric("1000")
+as.double("3.14")
+```
+
+Remember the `character` data type? Strings in R are nothing but instantiations of this data type. A `character` is a very "old" data type in R, so that all integers and doubled coerce to characters when appropriate. For example,
+
+``` {r echo = T}
+number <- 10
+paste("Text", number)
+```
+
+We will discuss `paste()` later, but you can see from the example that is "puts things together into a character vector" (it *concatenates* strings, technically). However, the numeric `10` is lost in a new string, isn't it... in R coercion, `character` eats everything.
+
+One needs to be careful when it comes to quoting string constants here (i.e. minding the occassion when the usage of `'` and `"` is appropriate):
+
+``` {r echo=T}
+# Using " and '
+# either:
+string_1 <- "Hello 'World'"
+string_1
+```
+
+``` {r echo=T}
+# or
+string_1 <- 'Hello "World"'
+string_1 # prints: "Hello \"World\"" - what is this: \ ?
+```
+
+What is this: `\`?!! It was not in my string? Don't worry, `\` is R's escape character. In the character vector above - `'Hello "World"'` - we find two instantiations of `"` enclosed by `'`. On the output, R transferred all instantiations of `'` to `"`, making it four instantiations of `"` altogether now. The escape character `\` is used to signal that the **second** instantiation of `"` is not a beginning of a new string, but a token to be printed, and that the third instantiation of `"` is not an ending of a string, but also a token to be printed to the output device.
+
+If you care about this much, take a look at the difference between `writeLines()` and `print()`:
+
+``` {r echo=T}
+# try:
+writeLines(string_1)
+print(string_1)
+```
+
+You could also start experimenting with `cat()`. More on escapasim in R:
+
+``` {r echo=T}
+# Escaping in R: use \, the R escape character
+string_1 <- 'Hello \"World\"'
+string_1
+```
+
+``` {r echo=T}
+writeLines(string_1)
+# Escaping escape character
+writeLines("\\") # nice
+```
+
+Yes that's how you get to use the escape character as a printable character in R, if you were wondering. Wait until it comes to regular expressions where things in R really tend to get nasty.
+
+***
+
+### B. Elementary Functions on Strings in R
+
+To obtain a length of a string in R...
+
+``` {r echo=T}
+# Length of strings
+length(string_1) # of course
+```
+
+But of course it is. Maybe `nchar()` would do better:
+
+``` {r echo=T}
+nchar(string_1) # base function
+```
+
+Concatenating strings in R:
+
+``` {r echo=T}
+string_3 <- c(string_1, string_2) # a character vector of length == 2
+writeLines(string_3)
+```
+
+No. No, no, no... that's a character vector of length == 2, we need to use `paste()` here:
+
+``` {r echo=T}
+string_3 <- paste(string_1, string_2, sep = ", ") # length == 1, base function
+writeLines(string_3)
+```
+
+Where {base} has `paste()`, {stringr} has `str_c()`:
+
+``` {r echo=T}
+strD <- c("First", "Second", "Third")
+# both paste {base} and str_c {stringr} are vectorized
+paste("Prefix-", strD, sep = "-")
+str_c("Prefix-", strD, sep = "-") # {stringr}
+```
+
+How to split strings into subcomponents? In {base} it's done by `strsplit()`, while {stringr} has 'str_split()':
+
+``` {r echo = T}
+# Splitting strings in R
+# with strsplit {base}
+string_1 <- "The quick brown fox jumps over the lazy dog"
+string_1
+```
+
+``` {r echo = T}
+splitA <- strsplit(string_1, " ") # is.list(splitA) == T
+splitA
+```
+
+`strsplit()` returns a list; `unlist()` it to get to your result:
+
+``` {r echo = T}
+splitA <- unlist(strsplit(string_1, " "))
+splitA
+```
+
+Extracting a part of it by combining `strsplit()` and `paste()`:
+
+``` {r echo = T}
+# "The quick brown" from "The quick brown fox jumps over the lazy dog"
+splitA <- paste(unlist(strsplit(string_1," "))[1:3], collapse = " ")
+splitA
+```
+
+``` {r echo = T}
+string_1
+```
+
+There's a `fixed` argument that you need to know about in `strsplit()`:
+
+``` {r echo = T}
+splitA <- strsplit(string_1," ")
+splitA
+```
+
+``` {r echo = T}
+splitA <- strsplit(string_1," ", fixed = T) # fixed=T says: match the split argument 
+splitA
+# exactly, otherwise, split is an regular expression; default is: fixed = FALSE
+```
+
+The `str_split()` function in {stringr} has some very useful, additional functionality in comparison to {base} `strplit()`. For example:
+
+``` {r echo = T}
+string_11 <- "Above all, don't lie to yourself. The man who lies to himself and listens to his own lie comes to a point that he cannot distinguish the truth within him, or around him, and so loses all respect for himself and for others. And having no respect he ceases to love."
+string_11
+```
+
+``` {r echo = T}
+str_split(string_11, boundary("word"))
+```
+
+``` {r echo = T}
+str_split(string_11, boundary("word", skip_word_none = F)) # including punctuation and special
+```
+
+***
+
+### B. Subsetting and transforming strings
+
+See, I have a character vector, and I need only the first three characters from each component:
+
+``` {r echo = T}
+# Subsetting strings
+string_1 <- c("Data", "Science", "Serbia")
+# {base}
+substr(string_1, 1, 3)
+```
+
+Let's start transforming strings with `substr()`:
+
+``` {r echo = T}
+# {base}
+string_2 <- string_1 # just a copy of string_1
+substr(string_2,1,3) <- "WowWow" # check the result!
+string_2
+```
+
+``` {r echo = T}
+substr(string_2,1,4) <- "WowWow" # check the result!
+string_2
+```
+
+``` {r echo = T}
+substr(string_2,1,6) <- "WowWow" # check the result!
+string_2
+```
+
+UPPER CASE to lower case:
+
+``` {r echo = T}
+string_1 <- "Belgrade"
+# {base}
+tolower(string_1)
+```
+
+Now everything to UPPER CASE with {base} `toupper()`:
+
+``` {r echo = T}
+string_1 <- tolower(string_1)
+toupper(string_1)
+```
+
+A useful {stringr} function `str_to_title()` capitalizes only the first character:
+
+``` {r echo = T}
+string_1 <- toupper(string_1)
+string_1
+```
+
+``` {r echo = T}
+# capitalize first letter
+str_to_title(string_1) # {stringr}
+```
+
+Removing overhead white spaces from strings is a notorious operation in text-mining:
+
+``` {r echo = T}
+# Remove whitespace
+string_1 <- c("  Remove whitespace  ");
+string_1
+```
+
+There goes {stringr} `str_trim()` to clean-up:
+
+``` {r echo = T}
+str_trim(string_1) # {stringr}
+```
+
+There's a `side` argument that we use to remove the leading (side = 'left') and trailing (side = 'right') whitespaces:
+
+``` {r echo = T}
+# remove leading whitespace
+str_trim(string_1, side = "left")
+```
+
+``` {r echo = T}
+# remove trailing whitespace
+str_trim(string_1, side = "right")
+```
+
+Using {base} `gsub()` to remove all whitespace:
+
+``` {r echo = T}
+# remove all whitespace?
+string_1 <- c("  Remove    whitespace  ") # how about this one?
+string_1
+```
+
+``` {r echo = T}
+# there are different ways to do it. Try:
+gsub(" ", "", string_1, fixed = T) # (!(fixed==T)), the first (pattern) argument is regex
+```
+
+`gsub()` is definitely something you need to learn about:
+
+``` {r echo = T}
+# replacing, in general:
+string_1 <- "The quick brown fox jumps over the lazy dog The quick brown"
+gsub("The quick brown", "The slow red", string_1, fixed=T)
+```
+
+Again, mind the `fixed` argument - by default, `gsub()` likes regular expressions.
+
+### C. Searching in strings
+
+``` {r echo = T}
+string_1
+```
+
+Does `string_1` contain `The quick brown`?
+
+``` {r echo = T}
+# Searching for something in a string {stringr}
+str_detect(string_1, "The quick brown") # T or F
+```
+
+Where is it? Use `str_locate` from {stringr}:
+
+``` {r echo = T}
+str_locate(string_1, "The quick brown")[[1]] # first match
+```
+
+And what if there is more than one match?
+
+``` {r echo = T}
+str_locate_all(string_1, "The quick brown")[[1]] # all matches
+```
+
+You might have heard that people in text-mining use *term-frequency matrices* a lot. These matrices typically list all interesting terms from a set of documents in their rows, and the documents themselves are represented by columns; cell entries are counts that provide an information on how many times a particular term have occurred in a particular document.
+
+We will not build a full term-frequency matrix in R now (check the {tm} package for R's functionality in text-mining), but only demonstrate how to use `str_locate_all()` to count the number of occurrences:
+
+``` {r echo = T}
+# term frequency, as we know, is very important in text-mining:
+term1 <- str_locate_all(string_1, "The quick brown")[[1]] # all matches for term1 
+# ie. "The quick brown"
+term1
+```
+
+Hm, it's easy now:
+
+``` {r echo = T}
+dim(term1)[1] # how many matches = how many rows in the str_locate_all output matrix
+```
+
+The {base} function `dim()`, if we haven't discussed it before, will return the dimensionality of a *multdimensional* object in R (a matrix or an array):
+
+``` {r echo = T}
+dim(c(1,2,3))
+```
+
+A simple vector is not multidimensional, of course; but
+
+``` {r echo = T}
+m <- matrix(c(1,2,3,4,5,6), ncol = 2, byrow = T)
+dim(m)
+```
+
+And you can access the dimensions independently, of course:
+
+``` {r echo = T}
+dim(m)[1] # The length of each column
+```
+
+``` {r echo = T}
+dim(m)[2] # The length of each row
+```
+
+Back to strings. 
+
+***
+
+### D. Sorting strings in R
+
+``` {r echo = T}
+# Sorting character vectors in R {base}
+string_1 <- c("New York", "Paris", "London", "Moscow", "Tokyo")
+string_1
+```
+
+It's really easy:
+
+``` {r echo = T}
+sort(string_1)
+```
+
+And with `decreasing=T`:
+
+``` {r echo = T}
+sort(string_1, decreasing = T)
+```
+***
+
+### E. Life after Death with Strings in R
+
++ Once again: [Gaston Sanchez's "Handling and Processing Strings in R"](http://gastonsanchez.com/Handling_and_Processing_Strings_in_R.pdf) - the chances you will ever need more than what's covered in this text-book are slim.
+
++ **Regular Expressions**: go pro. [Regular-Expressions.info](http://www.regular-expressions.info/) is a well known learning resource. In order to figure out the specific regex standard used in R: [Regular Expressions as used in R](https://stat.ethz.ch/R-manual/R-devel/library/base/html/regex.html). [This section of Regular-Expressions.info](http://www.regular-expressions.info/rlanguage.html) is on regex in R specifically.
+
+***
+
+
+## Readings for Session 05:
+
+*Session 05 will focus on data wrangling with two nice R packages: {dplyr} and {tidyr}.* Note: {dplyr} is the single most popular R package out there. There are many good learning resources online for both of these two packages:
+
++ A good and short introductory read on {dplyr} is [Introduction to dplyr](https://cran.rstudio.com/web/packages/dplyr/vignettes/introduction.html);
++ For {tidyr}, try [Introducing tidyr](https://blog.rstudio.org/2014/07/22/introducing-tidyr/);
++ Even better, combining {dplyr} and {tidyr}: Brad Boehmke's [Data Processing with dplyr & tidyr](https://rpubs.com/bradleyboehmke/data_wrangling).
++ Check-out **Cheatsheets** under the Help menu of your RStudio too.
+
+***
+
+#### [Data Science Serbia](http://www.datascience.rs) 2016.
