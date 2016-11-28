@@ -88,7 +88,7 @@ str_split(string_11, boundary("word", skip_word_none = F)) # including punctuati
 # and special
 
 # Subsetting strings
-string_1 <- c("Data", "Science", "Middle East")
+string_1 <- c("Data", "Science", "Serbia")
 # {base}
 substr(string_1, 1, 3)
 
@@ -102,7 +102,7 @@ substr(string_2,1,6) <- "WowWow" # check the result!
 string_2
 
 # UPPER CASE to lower case and vice versa in R
-string_1 <- "Dubai"
+string_1 <- "Belgrade"
 # {base}
 tolower(string_1)
 string_1 <- tolower(string_1)

@@ -10,7 +10,7 @@
 # Data Science Mentor @ Springboard, Data Science Serbia
 ## ══════════════════════════════════════════════════════════════════════════════════
 
-## SESSION 01: DATA STRUCTURES IN R
+## SESSION 02: DATA STRUCTURES IN R
 ## ═════════════════════════════════════════
 
 ### A. Data Types in R, Subsetting, and Coercion

@@ -739,7 +739,10 @@ mpg_join
 ***
 ## Readings for Session 3:
 
-+ Chapters 1 to 5 from [Norman Matloff's The Art of R Programming](http://heather.cs.ucdavis.edu/~matloff/132/NSPpart.pdf)
++ Chapter 6 (Data Frames) from [Norman Matloff's The Art of R Programming](http://heather.cs.ucdavis.edu/~matloff/132/NSPpart.pdf)
+
++ Chapter 8 (R Programming Structures) from [Norman Matloff's The Art of R Programming](http://heather.cs.ucdavis.edu/~matloff/132/NSPpart.pdf)
+
 
 ***
 #### [Data Science Serbia](http://www.datascience.rs) 2016.
