@@ -316,8 +316,8 @@ string_11</code></pre>
 ## [106] &quot;love&quot;        &quot;.&quot;</code></pre>
 <hr />
 </div>
-<div id="b.-subsetting-and-transforming-strings" class="section level3">
-<h3>B. Subsetting and transforming strings</h3>
+<div id="c.-subsetting-and-transforming-strings" class="section level3">
+<h3>C. Subsetting and transforming strings</h3>
 <p>See, I have a character vector, and I need only the first three characters from each component:</p>
 <pre class="r"><code># Subsetting strings
 string_1 &lt;- c(&quot;Data&quot;, &quot;Science&quot;, &quot;Serbia&quot;)
@@ -382,8 +382,8 @@ gsub(&quot;The quick brown&quot;, &quot;The slow red&quot;, string_1, fixed=T)</
 <pre><code>## [1] &quot;The slow red fox jumps over the lazy dog The slow red&quot;</code></pre>
 <p>Again, mind the <code>fixed</code> argument - by default, <code>gsub()</code> likes regular expressions.</p>
 </div>
-<div id="c.-searching-in-strings" class="section level3">
-<h3>C. Searching in strings</h3>
+<div id="d.-searching-in-strings" class="section level3">
+<h3>D. Searching in strings</h3>
 <pre class="r"><code>string_1</code></pre>
 <pre><code>## [1] &quot;The quick brown fox jumps over the lazy dog The quick brown&quot;</code></pre>
 <p>Does <code>string_1</code> contain <code>The quick brown</code>?</p>
@@ -425,8 +425,8 @@ dim(m)</code></pre>
 <p>Back to strings.</p>
 <hr />
 </div>
-<div id="d.-sorting-strings-in-r" class="section level3">
-<h3>D. Sorting strings in R</h3>
+<div id="e.-sorting-strings-in-r" class="section level3">
+<h3>E. Sorting strings in R</h3>
 <pre class="r"><code># Sorting character vectors in R {base}
 string_1 &lt;- c(&quot;New York&quot;, &quot;Paris&quot;, &quot;London&quot;, &quot;Moscow&quot;, &quot;Tokyo&quot;)
 string_1</code></pre>
@@ -439,8 +439,8 @@ string_1</code></pre>
 <pre><code>## [1] &quot;Tokyo&quot;    &quot;Paris&quot;    &quot;New York&quot; &quot;Moscow&quot;   &quot;London&quot;</code></pre>
 <hr />
 </div>
-<div id="e.-life-after-death-with-strings-in-r" class="section level3">
-<h3>E. Life after Death with Strings in R</h3>
+<div id="f.-life-after-death-with-strings-in-r" class="section level3">
+<h3>F. Life after Death with Strings in R</h3>
 <ul>
 <li><p>Once again: <a href="http://gastonsanchez.com/Handling_and_Processing_Strings_in_R.pdf">Gaston Sanchez’s “Handling and Processing Strings in R”</a> - the chances you will ever need more than what’s covered in this text-book are slim.</p></li>
 <li><p><strong>Regular Expressions</strong>: go pro. <a href="http://www.regular-expressions.info/">Regular-Expressions.info</a> is a well known learning resource. In order to figure out the specific regex standard used in R: <a href="https://stat.ethz.ch/R-manual/R-devel/library/base/html/regex.html">Regular Expressions as used in R</a>. <a href="http://www.regular-expressions.info/rlanguage.html">This section of Regular-Expressions.info</a> is on regex in R specifically.</p></li>

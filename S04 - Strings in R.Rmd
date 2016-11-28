@@ -213,7 +213,7 @@ str_split(string_11, boundary("word", skip_word_none = F)) # including punctuati
 
 ***
 
-### B. Subsetting and transforming strings
+### C. Subsetting and transforming strings
 
 See, I have a character vector, and I need only the first three characters from each component:
 
@@ -319,7 +319,7 @@ gsub("The quick brown", "The slow red", string_1, fixed=T)
 
 Again, mind the `fixed` argument - by default, `gsub()` likes regular expressions.
 
-### C. Searching in strings
+### D. Searching in strings
 
 ``` {r echo = T}
 string_1
@@ -388,7 +388,7 @@ Back to strings.
 
 ***
 
-### D. Sorting strings in R
+### E. Sorting strings in R
 
 ``` {r echo = T}
 # Sorting character vectors in R {base}
@@ -409,7 +409,7 @@ sort(string_1, decreasing = T)
 ```
 ***
 
-### E. Life after Death with Strings in R
+### F. Life after Death with Strings in R
 
 + Once again: [Gaston Sanchez's "Handling and Processing Strings in R"](http://gastonsanchez.com/Handling_and_Processing_Strings_in_R.pdf) - the chances you will ever need more than what's covered in this text-book are slim.
 
