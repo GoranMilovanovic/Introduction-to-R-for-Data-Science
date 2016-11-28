@@ -158,7 +158,7 @@ ggplot(plotFrameVars, aes(y = estimated, x = population)) +
 ## -- What if we truncate -3SD < x < +3SD in Step 2?
 sampleVarsTrunc <- sapply(seq(3,20,1), function(x) {
   rSample <- rnorm(100000,15,x)
-  quants <- c(-3*sd(rSample), 3*sd(rSample))
+  quants <- c(mean(rSample)-3*sd(rSample), mean(rSample)+3*sd(rSample))
   rSample <- rSample[which(rSample>quants[1] & rSample<quants[2])]
   var(rSample)
 })
@@ -178,7 +178,7 @@ ggplot(plotFrameVars, aes(y = estimated, x = population)) +
 ## -- What if we truncate -2SD < x < +2SD in Step 2?
 sampleVarsTrunc <- sapply(seq(3,20,1), function(x) {
   rSample <- rnorm(100000,15,x)
-  quants <- c(-2*sd(rSample), 2*sd(rSample))
+  quants <- c(mean(rSample)-2*sd(rSample), mean(rSample)+2*sd(rSample))
   rSample <- rSample[which(rSample>quants[1] & rSample<quants[2])]
   var(rSample)
 })

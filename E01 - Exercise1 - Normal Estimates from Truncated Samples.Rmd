@@ -302,10 +302,10 @@ ggplot(plotFrameVars, aes(y = estimated, x = population)) +
 We repeat the experiment, but the truncate the sample at the usual -3SD < x < +3SD (approx. 99.7% of data under the Normal are found there, so it does not seem that we're really loosing too much, right?):
 
 ``` {r echo = T}
-## -- What if we truncate -3SD < x < +3SD in Step 2?
+## -- What if we truncate mean(x)-3SD < x < mean(x)+3SD in Step 2?
 sampleVarsTrunc <- sapply(seq(3,20,1), function(x) {
   rSample <- rnorm(100000,15,x)
-  quants <- c(-3*sd(rSample), 3*sd(rSample))
+  quants <- c(mean(rSample)-3*sd(rSample), mean(rSample)+3*sd(rSample))
   rSample <- rSample[which(rSample>quants[1] & rSample<quants[2])]
   var(rSample)
 })
@@ -333,10 +333,10 @@ Finally, it should get worse if we go for -2SD < x < +2SD? Am I right?
 *until Session 04, 28 Nov/2016, where we will talk about strings in R :)*
 
 ``` {r echo = T}
-## -- What if we truncate -2SD < x < +2SD in Step 2?
+## -- What if we truncate mean(x)-2SD < x < mean(x)+2SD in Step 2?
 sampleVarsTrunc <- sapply(seq(3,20,1), function(x) {
   rSample <- rnorm(100000,15,x)
-  quants <- c(-2*sd(rSample), 2*sd(rSample))
+  quants <- c(mean(rSample)-2*sd(rSample), mean(rSample)+2*sd(rSample))
   rSample <- rSample[which(rSample>quants[1] & rSample<quants[2])]
   var(rSample)
 })
