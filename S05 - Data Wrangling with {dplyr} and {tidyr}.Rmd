@@ -1,0 +1,446 @@
+# Introduction to R for Data Science
+### Session 05: Data Wrangling with {dplyr} and {tidyr}
+
+12/06/2016, Belgrade, Serbia
+
+Organized by: [Data Science Serbia](http//:www.datascience.rs) and [Startit](http://en.startit.rs)
+
+***
+
+## Lecturers
+
+
+![](img/GoranSMilovanovic.jpg)
+
+#### [Goran S. Milovanović](http://www.exactness.net), Phd  
+#### Data Science Mentor at [Springboard](https://www.springboard.com/workshops/data-science), [Data Science Serbia](http://www.datascience.rs)  
+![](img/BrankoKovac.jpg)  
+
+#### [ing Branko Kovač](https://rs.linkedin.com/in/kovacbranko)
+#### Data Scientist @Tradecore, Data Science Mentor at [Springboard](https://www.springboard.com/workshops/data-science), [Data Science Serbia](http://www.datascience.rs)
+
+***
+
+### A. Getting to know about {dplyr}
+
+You must have heard Data Scientist complaining how they have to dedicate 70% of their time to data acquisition and preparation for mathematical modeling and reporting. That is - like it or not - true (TRUE, in fact :). The activity has come to be known as *data wrangling* these days. Many great packages provide important functions to structure, reshape, and tidy your data sets in R, but {dplyr} and {tidyr} which we will study now are used by an overwhelming majority of R developers. And for a goood reason, as you will see.
+
+Let's load the libraries. We will be using the famous {hflights} data set for this exercise.
+
+``` {r echo=T}
+
+# clear all
+rm(list=ls())
+
+# libraries
+library(dplyr)
+library(tidyr)
+library(hflights)
+
+data("hflights")
+
+```
+
+Of course, if we want to learn about the basic characteristics of *hflights*: 
+
+``` {r echo=T}
+# Obtaining basic info about dataset
+?hflights
+```
+
+``` {r echo=T}
+str(hflights)
+```
+
+``` {r echo=T}
+summary(hflights)
+```
+
+``` {r echo=T}
+colnames(hflights)
+```
+
+``` {r echo=T}
+head(hflights, 10)
+```
+
+First, let's do some basic subsetting {base} R style:
+
+``` {r echo=T}
+# Some examples of "traditional" subsetting and wrangling
+example_1 <- hflights[hflights$Month == "1" & hflights$DayofMonth == 1, ]
+head(example_1, 10)
+```
+
+``` {r echo=T}
+example_2 <- hflights[c("DepTime", "ArrTime", "FlightNum")]
+head(example_2, 10)
+```
+
+``` {r echo=T}
+example_3 <- aggregate(Diverted ~ DayOfWeek, data = hflights, FUN = sum)
+head(example_3, 10)
+```
+
+The essential property of {dplyr} is the introducton of simple functions to deal with data sets in R. These functions are considered to be very simple to use and understand. If you have any background in SQL or SQL-like languages, you will soon find {dplyr} natural to use. Also, if you have any experience with SPSS, Statsoft STATISTICA, and similar statistical software with "point-and-click" interfaces, you will figure out that {dplyr} in effect mimics many of the functions found there to assess and transform spreadsheet rows and columns appropriately.
+
+For example, `filter()` in {dplyr} is used to filter rows in accordance with some criterion: to access all rows of `hflights` that satisfy `hflights$Month == 1` and `hflights$DayofMonth == 1`, do the following:
+
+``` {r echo = T}
+example_1 <- filter(hflights, Month == 1, DayofMonth == 1)
+head(example_1, 20)
+```
+
+Similarly, `select()` is used to subset columns:
+
+``` {r echo = T}
+example_2 <- select(hflights, DepTime, ArrTime, FlightNum)
+head(example_2, 20)
+```
+
+Let's introduce basic analytics that can be obtained from {dplyr}; the `summarise()` call in the next code chunk first *aggregates* the data by `DayOfWeek` - this is done by a call to `group_by()` as in `group_by(hflights, DayOfWeek)` - and the asks for a `sum()` - a {base} R function - of the `Diverted` column:
+
+``` {r echo = T}
+example_3 <- summarise(group_by(hflights, DayOfWeek), sum(Diverted))
+head(example_3, 20)
+```
+
+You will easily get used to these any many more helpful tools provided by {dplyr}. Let's try out `glimpse()`, the {dplyr} replacement for {base} `str()`:
+
+``` {r echo=T}
+# dplyr::glimpse() is great replacement for str()
+glimpse(hflights)
+```
+
+***
+
+### B. Selecting columns with `select()`
+
+Let's dwell into {dplyr}'s functions in a more systematic way. We will start with `select()`, which is meant to help you select columns from a `data.frame`:
+
+``` {r echo=T}
+# Select following columns: from 'Year' to 'DayofMonth', all which have 'Taxi' in
+# its name and all which names end with 'Delay'.
+head(select(hflights, Year:DayofMonth, contains("Taxi"), ends_with("Delay")))
+```
+
+You may have observed that we have used two *helper* functions to {dplyr} `select` in the previous call. The `contains()` function will recognize all columns whose names encompass the `character` which we have passed as an argument to it; `ends_with()` will, naturally, search for its `character` argument at the end of the respective column names. There is also `starts_with()` which we leave to you to explore.
+
+***
+
+### C. Filtering rows of data sets with `filter()`
+
+In a way similar to how `select()` subsets a data set by columns, `filter()` is used in {dplyr} to select its rows. The following call to `filter()` will return all rows of `hglights` that has a value of `AA` OR `UA` on `UniqueCarrier`, AND satisfy `hflights$Month == 5`:
+
+``` {r echo=T}
+# If you want to subset data by some criteria, you're going to use filter(). It is
+# easy to use - just give it your criteria. NOTE: Using '&' is the same as using ','
+# and it means AND; if you want to apply OR condition, use '|'.
+head(filter(hflights, (UniqueCarrier=="AA" | UniqueCarrier=="UA"), Month == 5))
+```
+
+And here's an example of nesting a {dplyr} `select()` call in a `filter()` call: the following returns all rows with `DepDelay>60`, but selects only the `UniqueCarrier` and `DepDelay` columns:
+
+``` {r echo=T}
+# Function nesting to select only some columns from dataset and use filter on it?
+result <- filter(select(hflights, UniqueCarrier, DepDelay), DepDelay > 60)
+head(result, 20)
+```
+
+Nesting many function calls is a usual routine in R programming. Still, it can make your code difficult to read. There is a way out: introducing the *pipe operator*.
+
+***
+
+### D. The %>% (pipe) operator
+
+The pipe operator takes the following form: `%>%`. This is how we use the pipe operator in R: imagine there is some function `f(x, args)`, taking `x` for the data that it should compute over and `args` for its arguments. Imagine that we need to pass the results of an `f(something, myArgs)` to another function `g(x, myArgsPlus)`, and then collect the results. Naturally, the way to go is `g(f(x, myArgs), myArgsPlus)`. The %>% operator, however, lets us do the following: `something %>% f(myArgs) %>% g(myArgsPlus)`.
+
+Confused? Don't be, it's easy: `something` is first passed as `x` to `f(x, myArgs)`; "passing" is done by `%>%` (read it like: send `something` to `f` which will use the arguments `myArgs` to compute over it). Then, the results is sent to `g(x, myArgs`), where `x` now is the results of the previous application of `f()` to `something`. The whole `something %>% f(myArgs) %>% g(myArgsPlus)` pipeline then reads: send `something` as `x` to `f(x, myArgs)`, take the result and send it as `x` to `g(x, myArgsPlus)`. Let's try it out.
+
+NOTE: The beatiful pipe operator - `%>%` - originates not from {dplyr}, but from another important R package, namely: {magrittr}. 
+
+``` {r echo=T}
+result <- select(hflights, UniqueCarrier, DepDelay) %>%
+  filter(DepDelay > 60)
+head(result, 20)
+```
+
+What have we just done? The `select()` call has retrieved `UniqueCarrier` and `DepDelay` from `hflights` only, and then passed the `data.frame` with only the selected columns to a `filter()` call that has subsetted only those rows where `DepDelay>60`; the result was assigned to `result` (cf.  `result <- ...` in the first line).
+
+
+***
+
+### E. {dplyr} `arrange()` vs. {base} `order()`
+
+Ordering your data sets or their part by particular values is of utmost importance for many operations in Data Science pipelines. {base} R functionality offers `order()`, which returns the indices of a sorted vector, for that purpose: 
+
+``` {r echo=T}
+# Often we want to sort data by some criteria. Let's
+# see how to do it using base::order() and dplyr::arrange().
+
+# {base}
+head(hflights[order(hflights$DepDelay), c("UniqueCarrier", "DepDelay")]) 
+```
+
+Similarly, and maybe more elegant, we call the {dplyr} `arrange()` function to obtain the sorted data set:
+
+``` {r echo=T}
+# {dplyr} with arrange()
+hflights %>%
+  select(UniqueCarrier, DepDelay) %>%
+  arrange(DepDelay) %>%
+  head()
+```
+
+Once again, let's read out the whole pipeline together. First, `hlights` as a whole is sent to `select` with a constraint to pick up only what is `UniqueCarrier` and `DepDelay`. Second, the results of the `select()` call is passed over to `arrange`, using `DepDelay` as a criterion of sorting. Finally, the sorted data set is passed over to `head()` in order to inspect only the first five of its rows (five rows come out by default from {base} `head()`, if we haven't mentioned this before; the same holds for `tail()`).
+
+***
+
+### F. {dplyr} `summary()`: Obtaining useful summaries from the data set or its subsets
+
+The following call will do exactly this: it will first pass `hflights` to `filter()` which will select only those rows were `Month > 5` or `Month < 10`; it will then pass what has remained of the data set to `select` which will grab only the `DayOfWeek` and `Cancelled` columns from the data; in the third step, the call will `group_by` the data over `DayOfWeek` and then call `summarise()` to add an additional column, `tot_cancelled`, which is obtained as a `sum()` of `Canceled` over the groups defined as levels of `DayOfWeek` by the previous `group_by()` call. Complicated? Not at all: 
+
+``` {r echo=T}
+hflights %>% filter(Month > 5, Month < 10) %>%
+  select(DayOfWeek, Cancelled) %>%
+  group_by(DayOfWeek) %>%
+  summarise(tot_cancelled = sum(Cancelled)) %>%
+  head()
+```
+
+We haven't said much about `group_by()` as introduced by {dplyr} until now. A `group_by()` will not return anything too interesting in itself. It will provide an intermediate step in computation, a preparatory form of the data set that can be accessed for various computations by a `summarise()` call form {dplyr}. Let's take a look at the following example:
+
+``` {r echo = T}
+groupedHflights <- 
+  hflights %>% group_by(Origin)
+groupedHflights
+```
+
+Now:
+
+``` {r echo=T}
+summarise(groupedHflights, meanTaxiOut = mean(TaxiOut))
+```
+
+That is how `group_by` operates. The `Origin` column of `hflights` encompasses only two different values. A previous call to `group_by(Origin)` - where we have passed `hflights` as a function argumenti via the `%>%` operator previously - has only assigned a value of this *"grouping"* to `groupedHflights`. A later call to `summarise` has the computed out a new column, `meanTaxiOut`, defined as a mean of the `TaxiOut` variable but over the data set previously `grouped_by()` `Origin`.
+
+You can use `summarise_each()` in {dplyr} to make summaries from multiple columns:
+
+``` {r echo=T}
+# This is how we can calculate percentage of cancelled and diverted flights from 
+# Houston by destination airport:
+hflights %>%
+  group_by(Dest) %>%
+  summarise_each(funs(mean), Cancelled, Diverted)
+```
+
+The whole trick here is that the `funs()` argument can send different functions to the columns to the columns that follow it in a call to `summarise_each()`.
+
+Now, you can use `n()` - which is a {dplyr} function, again - to count the number of occurrences of particular values:
+
+``` {r echo=T}
+# n() is nifty little function which can be called only inside other dplyr functions.
+# Counting the number of flights by airport and month:
+hflights %>%
+  group_by(Month, Dest) %>%
+  summarise(flight_count = n()) %>%
+  arrange(desc(flight_count))
+```
+
+Here's what we have done: we have first grouped `hflights` over the `Month` and `Dest` columns, then we have called `summarise()` and asked for a number of flights - namely, `n()` in {dplyr} - that have occurred in each group, and asked {dplyr} to sort the results in a descending order by a call to `arrange()`. There's an even more efficient way to do this in {dplyr}:
+
+``` {r echo=T}
+hflights %>%
+  group_by(Month, Dest) %>%
+  tally(sort = T)
+```
+
+Do `?tally` to find out more. {dplyr} is full of such and similar tricks. To retrieve the number of `unique()` values, for example, use `n_distinct()` from {dplyr}:
+
+``` {r echo=T}
+# n_distinct() does similar thing returning number of unique values.
+hflights %>%
+  group_by(Dest) %>%
+  summarise(flight_count = n(), plane_count = n_distinct(UniqueCarrier))
+```
+
+Finally, let's wrap up our introduction to the `n`family of {dplyr} functions by introducing `top_n()`, which provides the top *n* rows by value:
+
+``` {r echo=T}
+# One more 'n' function is top_n(). It's clear that it gives top n number of values
+# where we decide what that number is.
+hflights %>%
+  select(Month, DayofMonth, DepDelay) %>%
+  group_by(Month) %>%
+  top_n(2, DepDelay) %>%
+  arrange(desc(Month))
+```
+
+Explanation: a call to `top_n(2, DepDelay)` has selected the two rows with top values on `DepDelay` from a subset of `hflights` previously grouped by `Month`. 
+
+***
+
+### G. {dplyr} `mutate()`: producing new variables from the existing ones
+
+We use `mutate()` to create new variables in the data set by transforming and/or combining the already existing ones. It should be easy to grasp:
+
+``` {r echo=T}
+# dplyr::mutate() is used if you want to make new variables using existing ones
+flights_with_km <- hflights %>%
+  group_by(UniqueCarrier) %>%
+  summarise(total_distance = sum(Distance)) %>%
+  mutate(distance_km = total_distance * 1.609)
+flights_with_km
+```
+
+***
+
+### H. Cleaning up your data sets with {dplyr}
+
+The {dplyr} function `coalesce()` will replace the missing values in a vector by the value offered as its single argument or a whole vector. For example, 
+
+``` {r echo=T}
+x <- c(1, 2, NA, NA, 5)
+coalesce(x, 0)
+```
+
+``` {r echo=T}
+x <- c(1, 2, NA, NA, 5)
+y <- c(1, 2, 3, 4, 5)
+x <- coalesce(x, y)
+x
+```
+
+Let's replace all missing values from `TaxiIn` by zero - we will use `0L` in the following call because
+
+``` {r echo=T}
+typeof(hflights$TaxiIn)
+```
+
+and the suffix "L" - which stands for "Long" - denotes R's 32-bit integer number representation: 
+
+``` {r echo=T}
+hflights$TaxiIn <- coalesce(hflights$TaxiIn, 0L)
+```
+
+### I. Joining data sets in {dplyr}
+
+{dplyr} mimics the SQL's JOIN operators very precisely. You can do full, left, right joins... as if you were operating over a relational database instead of working with an R `data.frame`:
+
+``` {r echo = T}
+# Imagine that you want to have full carrier name instead of abbreviation in your
+# data.frame. However, full names are stored in another data frame. It's easy to
+# solve that problem by joining:
+
+# Manually created dataset with carrier names of interest
+carier_names <- data.frame(carrier_abb = as.character(flights_with_km$UniqueCarrier), 
+                           carrier_name = c("American Airlines", "Alaska Airlines", 
+                                            "JetBlue", "Continental Airlines", 
+                                            "Delta", "Atlantic Southeast Airlines", 
+                                            "Frontier Airlines", "Airtran Airways", 
+                                            "American Eagle Airlines", 
+                                            "Skywest Airlines", "United Airlines", 
+                                            "US Airways", "Southwest Airlines", 
+                                            "SouthCentral Air", "Air Nostrum"), 
+                           stringsAsFactors = F)
+
+# join w. {dplyr}:
+flights_with_km <- left_join(flights_with_km, carier_names, 
+                             by = c("UniqueCarrier" = "carrier_abb"))
+flights_with_km
+```
+
+
+***
+
+### J. Introducing {tidyr}: spreading, gathering, uniting, and separating
+
+The {tidyr} package comes handy when you need perform some simple, yet too often necessary, reshaping operations over subsets of data or even entire data sets.
+
+The {tidyr} function `unite()` will help us to put together the values from several columns into a new column. In the `hflights` data set, we have the data on `Year`, `Month`, and `DayofMonth`. Imagine that we need a single variable (a column) to encode the date of observation. Let's take a look at the original variables first:
+
+``` {r echo=T}
+hflights %>% 
+  select(Year, Month, DayofMonth) %>% head()
+```
+
+We will now use {tidyr} function `unite()` to produce the full date by concatenating `Year`, `Month`, and `DayofMonth`:
+
+``` {r echo=T}
+# the col argument of unite() is the unquoted name of the new column
+# that we are about to produce; then we list the original columns (unquoted!)
+# finally, we introduce the separator by the sep argument:
+hflightsUnited <- hflights %>% unite(col = date, 
+                                     Year, Month, DayofMonth, 
+                                     sep = "/")
+# let's drop the original variables from the new data set:
+hflightsUnited$Year <- NULL
+hflightsUnited$Month <- NULL
+hflightsUnited$DayofMonth <- NULL
+hflightsUnited$DayOfWeek <- NULL
+head(hflightsUnited)
+```
+
+Assume that we want the original columns back: `unite` has an inverse, called `separate` in {tidyr}, that works in this purpose:
+
+``` {r echo=T}
+# But if we ever need year, month and day data again separately...
+hflightsSeparated <- 
+  hflightsUnited %>% separate(date, 
+                              c("Year", "Month", "DayofMonth"), 
+                              sep = "/")
+head(hflightsSeparated)
+```
+
+Another pair of important and mutually inverse {tidyr} functions are `spread` and `gather`. Do you remember how `tally()` worked from {dplyr}?
+
+``` {r echo=T}
+mon_fli_carr <- hflights %>%
+  group_by(Month, Dest) %>%
+  tally(sort = T)
+head(mon_fli_carr, 20)
+```
+
+The previous call has returned the data in the so called *long format*: the resulting table presents the combinations of levels from `Month` and `Dest` which can be read from the two respective columns, and the respective values for each combination of levels are found in the column `n`. However, many times we will need the data in the so called *"wide format*, and that is were `spread` from {tidyr} comes into play:
+
+``` {r echo=T}
+# in {tidyr} spread(): key is the name of the column whose values will be used
+# as new columns' names; value is the name of the column whose values 
+# will populate the cells:
+mon_fli_carr <- hflights %>%
+  group_by(Month, Dest) %>%
+  tally(sort = T) %>% 
+  spread(key = Month, 
+         value =  n) # tidyr::spread()
+colnames(mon_fli_carr) <- c("Dest", month.name)
+head(mon_fli_carr)
+```
+
+This way of data reshaping is rather common, of course. To put the data set back to the *long* format, however, we can call `gather()` from {tidyr} in the following way:
+
+``` {r echo = T}
+# Again, note the usage of unquoted column names in {tidyr}
+mon_fli_carr <- 
+  mon_fli_carr %>% gather(key = Month, 
+                          value = n, 
+                          January:December)
+head(mon_fli_carr)
+```
+
+
+***
+
+## Readings for Session 06:
+
+*Session 06 will focus on doing Explanatory Data Analysis (EDA) in R* There are no specific readings designated for the next session. The best way to prepare yourself for it is to refresh your knowledge on the following topics in statistics:
+
++ *Measures of central tendency: mean, median, mode*
++ *Measures of variation (spread): variance, standard deviation, range, IQR*
++ *Chi-Square test*
++ *Fisher's Exact Test*
++ *Q-Q Plots*
++ *Boxplots*
+
+***
+
+#### [Data Science Serbia](http://www.datascience.rs) 2016.

@@ -14,7 +14,7 @@
 # Data Science Mentor @ Springboard, Data Science Serbia
 ## ══════════════════════════════════════════════════════════════════════════════════
 
-## SESSION 03: CONTROL FLOW AND FUNCTIONS IN R
+## SESSION 04: FUNCTIONS TO WORK WITH STRINGS IN R
 ## ══════════════════════════════════════════════════════════════════════════════════
 
 # clear all
