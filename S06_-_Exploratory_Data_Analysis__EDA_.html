@@ -518,7 +518,7 @@ chisq.test(t2, simulate.p.value = TRUE)</code></pre>
 ##  replicates)
 ## 
 ## data:  t2
-## X-squared = 18.036, df = NA, p-value = 0.001999</code></pre>
+## X-squared = 18.036, df = NA, p-value = 0.0004998</code></pre>
 <p>With this result, what is the conclusion: are row and column vectors of this table independent, or not? Try to remember: how does one formulate the Null Hypothesis for this test? What does the expected distribution of data under the Null Hypothesis for the Chi-Square test of indepedence?</p>
 <p>We will talk more about the Chi-Square distribution in one of our following sessions. In the meantime, let me remind you that Fisher’s Exact Test is considered to be a better alternative in situations like this one:</p>
 <pre class="r"><code># Better: Fisher Exact Test for Count Data

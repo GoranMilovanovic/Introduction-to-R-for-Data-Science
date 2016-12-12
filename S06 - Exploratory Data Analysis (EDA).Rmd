@@ -1,8 +1,3 @@
----
-output:
-  html_document: default
-  pdf_document: default
----
 # Introduction to R for Data Science
 ### Session 06: Exploratory Data Analysis (EDA) in R
 
