@@ -1,0 +1,480 @@
+---
+output:
+  html_document: default
+  pdf_document: default
+---
+# Introduction to R for Data Science
+### Session 06: Exploratory Data Analysis (EDA) in R
+
+12/12/2016, Belgrade, Serbia
+
+Organized by: [Data Science Serbia](http//:www.datascience.rs) and [Startit](http://en.startit.rs)
+
+***
+
+## Lecturers
+
+
+![](img/GoranSMilovanovic.jpg)
+
+#### [Goran S. Milovanović](http://www.exactness.net), Phd  
+#### Data Science Mentor at [Springboard](https://www.springboard.com/workshops/data-science), [Data Science Serbia](http://www.datascience.rs)  
+![](img/BrankoKovac.jpg)  
+
+#### [ing Branko Kovač](https://rs.linkedin.com/in/kovacbranko)
+#### Data Scientist @Tradecore, Data Science Mentor at [Springboard](https://www.springboard.com/workshops/data-science), [Data Science Serbia](http://www.datascience.rs)
+
+***
+
+### A. Introduction to EDA
+
+Of course, the first step in data analytics is getting to know about the elementary characteristics of your data sets. In terms of statistical science, we're talking descriptive statistics here: sample mean, median, and mode, as measures of central tendency; learning about the probability distributions of important variables from the data set; learning about dispersion by inspecting sample variances (or standard deviations), ranges, IQRs and similar; and inspecting the data visually, of course. These procedures have come to be know as *Exploratory Data Analysis* (EDA) in the course of the second half of the 20th century; the term has been popularised by the famous American statistician [John Tukey (1915-2000)](https://en.wikipedia.org/wiki/John_Tukey), who published a book on the topic titled "Exploratory Data Analysis" in 1977.
+
+In another work (1961) Tukey defined data analysis in 1961 as: "*[P]rocedures for analyzing data, techniques for interpreting the results of such procedures, ways of planning the gathering of data to make its analysis easier, more precise or more accurate, and all the machinery and results of (mathematical) statistics which apply to analyzing data.*" [source: [Wikipedia](https://en.wikipedia.org/wiki/Exploratory_data_analysis)]
+
+We will play around with the very well know `mtcars` data set in R to learn how to do EDA in R. You can learn more about `mtcars` from [this description](https://stat.ethz.ch/R-manual/R-devel/library/datasets/html/mtcars.html).
+
+``` {r echo=T}
+# clear all
+rm(list=ls())
+
+# libraries
+library(datasets)
+library(dplyr)
+library(ggplot2)
+
+# data set
+data(mtcars)
+```
+
+We have already learned how to summarize data in R by using {base} or {dplyr} functions. Let's start with a short reminder.
+
+The summary of important statistics can be obtained by using `summary()` which is a {base} R function:
+
+``` {r echo = T}
+summary(mtcars) # {base}
+```
+
+You can start refreshing your knowledge of statistics by explaining what sample statistics does `summary()` display for each variable in the data set. If you remember, there's something similar to `str()` in {dplyr}, called `glimpse()`:
+
+``` {r echo = T}
+glimpse(mtcars) # {dplyr}
+```
+
+To observe the first few raws of the `data.frame` that you're inspecting, do `head()` and pass the number of rows to view as an argument:
+
+``` {r echo = T}
+head(mtcars, 5) # {base}
+```
+
+Similarly, to take a look at the last N rows from some `x` that is a `data.frame`, do `tail(x, N)`:
+
+``` {r echo = T}
+tail(mtcars,10) # {base}
+```
+
+`dim()` returns the dimensionality of data - for `data.frame` it is the numvber of rows and columns:
+
+``` {r echo = T}
+dim(mtcars)
+```
+
+Finally, let's summarise the mean and standard deviation of the `mpeg` variable from `mtcars`, grouping cars by numbers of cylinders (that is `cyl`) and using the {dplyr} function `summarise()`:
+
+``` {r echo = T}
+# {dplyr} group_by() and summarise()
+cylinders <- group_by(mtcars, cyl)
+class(cylinders)
+```
+
+Remember that `group_by` simply annotates your `data.frame`, preparing it for some further analysis that you might order:
+
+``` {r echo = T}
+summarise(cylinders, 
+          meanMPG = mean(mpg), 
+          stdDevMPG = sd(mpg))
+```
+
+And here we are: the mean `mpg` and the standard deviations for this variable for all cars from the `mtcars` data set, grouped by number of cylinders (`cyl`). Any conclusions? As the number of cylinders increase as `c(4, 6, 8)`, the `meanMPG` decreases, while its standard deviation first decreases sharply and then increases slghtly. These are the types of qualitative assessments about your data that you need to make before planning for any statistical modeling - or call it machine learning if you prefer. Anyways, before you go for applying estimation theory in statistics, you need to learn how to better understand the data that are in front of you. That is what EDA is for.
+
+***
+
+### B. Obtaining descriptive statistics from R
+
+R functions `mean()`, `median()`, `var()`, and `sd()` have enough self-explanatory names, don't they? Try them out:
+
+``` {r echo = T}
+## Mean
+mean(mtcars$mpg)
+```
+
+Now, for one tricky thing with `mean()` and several other R statistical functions:
+
+``` {r echo = T}
+mtcars$mpg[10]<- NA
+mean(mtcars$mpg) # carefully!
+```
+
+N.B. the mean of an R vector that contains any `NA`s is `NA`. The correct for this, use `rm.na = TRUE` argument in `mean()`:
+
+``` {r echo = T}
+mean(mtcars$mpg, na.rm=T) # right...
+```
+
+Revert to the original data set and ask for the variance of `mpg`:
+
+``` {r echo = T}
+data(mtcars)
+## Variance
+var(mtcars$mpg)
+```
+
+The standard deviation, of course, is:
+
+``` {r echo = T}
+## Standard Deviation
+sd(mtcars$mpg)
+```
+
+What does R compute: sample, or population variance?
+
+``` {r echo = T}
+sampleVariance <- sum((mtcars$mpg-mean(mtcars$mpg))^2)/length(mtcars$mpg)
+populationVariance <- sum((mtcars$mpg-mean(mtcars$mpg))^2)/(length(mtcars$mpg)-1)
+```
+
+Let's see:
+
+``` {r echo = T}
+sampleVariance == var(mtcars$mpg)
+```
+
+``` {r echo = T}
+populationVariance == var(mtcars$mpg)
+```
+
+Ok. Now we know :) Let's learn how to compute sample quantiles from R:
+
+``` {r echo = T}
+## sample quantiles
+quantile(mtcars$mpg, probs = seq(0,1,.1))
+```
+
+It couldn't get any easier than this: provide a `probs` argument and define what quantiles are you looking for there, then simply call the {base} function `quantile()`... From time to time, you will find using `unname()` in R useful:
+
+``` {r echo = T}
+## sample quantiles
+unname(quantile(mtcars$mpg, probs = seq(0,1,.1)))
+```
+
+If you are particularly interested in the sample median:
+
+``` {r echo = T}
+# median
+median(mtcars$mpg)
+```
+
+Of course:
+
+``` {r echo = T}
+# median is the .5 quantile
+median(mtcars$mpg) == quantile(mtcars$mpg, probs = .5)
+```
+
+Minimums, maximums, and ranges:
+
+``` {r echo = T}
+## maximum
+max(mtcars$mpg)
+```
+
+``` {r echo = T}
+## minimum
+min(mtcars$mpg)
+```
+
+``` {r echo = T}
+## range
+range(mtcars$mpg)
+```
+
+Ha - range is really:
+
+``` {r echo = T}
+rangeMPG <- range(mtcars$mpg)[2]-range(mtcars$mpg)[1]
+rangeMPG
+```
+
+***
+
+### C. Boxplots: the hunt for outliers
+
+There is a function (like one couldn't say, right) in R to produce the boxplot of a variable:
+
+``` {r echo = T}
+# boxplot mtcars$mpg
+boxplot(mtcars$mpg,
+        horizontal = TRUE, 
+        xlab="MPG",
+        main = "Boxplot: MPG",
+        col = "gold")
+```
+
+Wow. Now to interpret this? First, let's learn how to produce more complicated boxplots. For example, we want to box plot `mpg` by number of cylinders that is stored in the `cyl` column:
+
+``` {r echo = T}
+# boxplot mtcars$mpg ~ mtcars$cyl 
+boxplot(mpg~cyl,
+        data = mtcars,
+        horizontal = F, 
+        xlab="MPG",
+        main = "Boxplot: MPG",
+        col = "deepskyblue")
+```
+
+The `mpg ~ cyl` argument passed to `boxplot()` in the previous example is something called a *formula interface* in R; we will be using this a lot when we start modeling the data. Now, as of the interpretation of boxplots in R, here is the definition of the outliers used: `boxplot()` in R recognizes as outliers those data points that are found beyond OUTTER fences, defined in the following way:
+
+Step 1: Compute the quantile on .75, also known as Q3 - the third quartile - in statistics: 
+
+``` {r echo = T}
+## NOTE: Boxplot "fences" and outlier detection
+## ═════════════════════════════════════════
+# Source: http://www.itl.nist.gov/div898/handbook/prc/section1/prc16.htm
+# Q3 = 75 percentile, Q1 = 25 percentile
+Q3 <- quantile(mtcars$mpg,.75)
+Q3
+```
+
+Step 2: Compute the quantile on .25, also known as Q1 - the first quartile - in statistics:
+
+``` {r echo = T}
+Q1 <- quantile(mtcars$mpg,.25)
+Q1
+```
+
+Step 3: compute the inter-quartile range as IQR = Q3 - Q1:
+
+``` {r echo = T}
+# IQ = Q3 - Q1; Interquartile range
+IQ <- unname(Q3 - Q1)
+IQ
+```
+
+And now you need to remember that...
+
++ *lower inner fence* = Q1 - 1.5*IQ
++ *upper inner fence* = Q3 + 1.5*IQ
++ *lower outer fence* = Q1 - 3*IQ
++ *upper outer fence* = Q3 + 3*IQ 
+
+A point *beyond an **inner fence** on either side* is considered a *mild outlier*, while a point *beyond an **outer fence** is considered an extreme outlier*.
+
+Of course, there is a function, namely: `IQR()`, to do this:
+
+``` {r echo=T}
+IQR(mtcars$mpg)
+```
+
+Thus you can always compute the lower and upper fences yourself and search for the outliers - of course, is this strategy of outlier detection is suitable for the problem under consideration.
+
+However, in order to understand the often too confusing discussion on the position of whiskers in the R's `boxplot()`, take a look at [this post: 'about boxplot' on R-bloggers](https://www.r-bloggers.com/about-boxplot/). It turns out that (citation from the post):
+
++ "... So the upper whisker is located at the *smaller* of the maximum x value and Q_3 + 1.5 IQR,...
+
++ whereas the lower whisker is located at the *larger* of the smallest x value and Q_1 – 1.5 IQR."
+
+This makes perfect sense, because if the `Q3+1.5I*QR` (upper fence) value falls below the variable maximum, there is no reason to place the whisker anywhere else, and exactly the same for placing it at the variable maximum if the upper fence falls beyond it. Following the same logic, the lower whisker is placed at the *larger* of the following two values: `min(x)` and `Q1-1.5*IQR`: if the lower fence is lower than the variable minimum, then the whisker is placed on the minimum, and if it does not than it is used as the position of the lower whisker itself. Otherwise, how would one detect the outliers in the sections of the variable domain where no data points are found?
+
+***
+
+### D. Histograms
+
+``` {r echo=T}
+## N.B. using freq = T for frequencies
+hist(mtcars$mpg, breaks = 10,
+     main="Histogram: MPG", 
+     xlab="MPG", 
+     freq=T)
+```
+
+Control the number of bins by using `breaks`, and be careful: the explanation of how R determines the binning of the distribution is found [here](https://stat.ethz.ch/R-manual/R-devel/library/graphics/html/hist.html), under 'Details'. There are various ways to do this, R uses one algorithm as a default and then offer different other options.
+
+To plot the probability density, use `prob=T`:
+
+``` {r echo=T}
+## N.B. prob=T for probability density
+hist(mtcars$mpg, breaks = 10,
+     main="Histogram: MPG",
+     xlab="MPG",
+     col = "blue",
+     prob=T)
+```
+
+And if you want to overlay the density function...
+
+``` {r echo=TRUE}
+# overlay mtcars$mpg density function over the empirical distribution
+## NOTE: this is kernel density estimation in R
+## You are not testing any distribution yet.
+hist(mtcars$mpg, breaks = 10,
+     main="Histogram: MPG",
+     xlab="MPG",
+     prob=T)
+lines(density(mtcars$mpg),
+      lty="dashed", 
+      lwd=2.5, 
+      col="red")
+```
+
+Let's experiment with `hist()`:
+
+``` {r echo = T}
+## experiment with hist()
+# N.B. par(mfcol = c(2,2)) sets the plot layout to 2 x 2
+par(mfcol = c(2,2))
+myHist <- lapply(seq(4,10,2), function(x) {
+  binSize <- (range(mtcars$mpg)[2]-range(mtcars$mpg)[1])/x
+  binEnds <- seq(0,x,1)*binSize+min(mtcars$mpg)
+  hist(mtcars$mpg,
+       main="",
+       xlab="MPG",
+       freq=T,
+       col = "deepskyblue",
+       breaks = binEnds)
+})
+# Do NOT forget to reset the plot parameters:
+par(mfcol = c(1,1))
+```
+
+Now, `myHist`...
+
+``` {r echo = T}
+class(myHist)
+```
+
+... is a `list`, of course, but `myHist[[1]]`...
+
+``` {r echo = T}
+class(myHist[[1]])
+```
+
+is a `histogram` - an object of its own kind.
+
+***
+
+### E. Q-Q Plots
+
+Q-Q (from: quantile-to-quantile) plots are extremely useful to inspect the distribution of your variables. R has a function, `qqnorm`, and a helper `qqline`, that will produce the *normal* qq-plot of your variables, placing the *theoretical quantiles* on the x-axis and the *empirical quantiles* on the y-axis:
+
+``` {r echo = T}
+# plot layout: 1 x 2
+par(mfcol = c(1,2))
+qqnorm(mtcars$mpg)
+qqline(mtcars$mpg, 
+       col="red",
+       lwd = 2)
+# c.f. histogram
+hist(mtcars$mpg, 
+     main="", 
+     xlab="MPG", 
+     prob=T)
+# overplot Gaussian (Normal) Distribution
+curve(dnorm(x, mean=mean(mtcars$mpg),sd=sd(mtcars$mpg)), 
+      add=TRUE, 
+      col="red",
+      lwd=2) 
+```
+
+***
+
+### F. Tables in R
+
+Speaking of EDA: to *cross-tabulate* (or simply tabulate) any variables of importance in R, there is a `table` class with corresponding functions to get to it: 
+
+``` {r echo=T}
+# tabulate $cyl
+tCyl <- table(mtcars$cyl)
+tCyl
+```
+
+``` {r echo=T}
+class(tCyl)
+```
+
+``` {r echo=T}
+# plot layout: 1 x 1
+par(mfcol = c(1,1))
+plot(tCyl) # ha!
+```
+
+And for something more interesting...
+
+``` {r echo=T}
+# cross-tabulation with table()
+t1 <- table(mtcars$cyl,mtcars$mpg)
+t1
+```
+
+``` {r echo=T}
+t2 <- table(mtcars$cyl,mtcars$gear)
+t2
+```
+
+``` {r echo=T}
+plot(t2,
+     xlab="Cyl",
+     ylab="Gear",
+     col="gold")
+```
+
+***
+
+### G. Some basic hypothesis testing: the Chi-Square test and Fisher's Exact
+
+To perfom a basic hypothsis test done over the cross-tabulated data, the Pearson's Chi-Square test, use the `chisq.test` function and pass your `table` as an argument to it:
+
+``` {r echo = T}
+# Testing the independence of rows and columns
+chisq.test(t2)
+```
+
+R warns you of the possibly incorrect test result, because there are cells in the table that have less than five observations (it is time to refresh your knowledge about this test, isn't it :). In such cases, you can use the simulated p-value from R:
+
+``` {r echo = T}
+# ... warning, because there are cells with < 5 observations 
+# Here's a workaround:
+chisq.test(t2, simulate.p.value = TRUE)
+```
+
+With this result, what is the conclusion: are row and column vectors of this table independent, or not? Try to remember: how does one formulate the Null Hypothesis for this test? What does the expected distribution of data under the Null Hypothesis for the Chi-Square test of indepedence?
+
+We will talk more about the Chi-Square distribution in one of our following sessions. In the meantime, let me remind you that Fisher's Exact Test is considered to be a better alternative in situations like this one:
+
+``` {r echo=T}
+# Better: Fisher Exact Test for Count Data
+fisher.test(t2)
+```
+
+***
+
+## Readings for Session 07:
+
+*Session 07 is on Probability Functions* You need to refresh your knowlegde on the following concepts to be in order to follow the next session:
+
++ *Random Variables*
++ *Probability*
++ *Probability Density/Mass Function*
++ *Cumulative Distribution Function*
++ *Inverse Distribution Function*
++ *Normal Distribution*
++ *Poisson Distribution*
++ *Chi-Square Distribution*
++ *Central Limit Theorem*
+
+I can't remember of a better source available online than the famous Grinstead and Snell's book [Introduction to Probability](http://www.dartmouth.edu/~chance/teaching_aids/books_articles/probability_book/amsbook.mac.pdf). Everything that you need to know is there. Not the whole book for the next Session, of course!
+
+An exercise on simulating the behavior of *sums of Independently and Identically Distributed* (IID) random variables will be provided prior to Session 07.
+
+***
+
+#### [Data Science Serbia](http://www.datascience.rs) 2016.
