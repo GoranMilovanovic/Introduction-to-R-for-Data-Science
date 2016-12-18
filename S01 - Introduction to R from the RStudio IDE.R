@@ -32,6 +32,8 @@ a + b
 # what is my working directory?
 getwd()
 
+setwd("")
+
 # save R object as .rds file
 saveRDS(a, "a.rds")
 a <- readRDS("a.rds")
@@ -100,6 +102,8 @@ lines(x,xFactorials, col="red")
 
 # create 100 random deviates from the Uniform on [0,1]
 x <- runif(100,0,1)
+
+x1 <- rnorm(100,5,.75)
 
 # ask for *each element in x* whether it is >= .5 or not:
 x>=.5

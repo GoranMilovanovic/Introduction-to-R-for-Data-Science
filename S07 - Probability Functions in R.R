@@ -42,6 +42,16 @@ pFiveAndLessSixes <- sum(
 )
 pFiveAndLessSixes # Wow... but that's five AND less than five... :(
 
+# or...
+pFiveAndLessSixes <- sum(sapply(seq(0,5), function(x) {
+  dbinom(x, size = 10, p = 1/6)
+}))
+pFiveAndLessSixes
+
+# or, in a vectorized programming language
+pFiveAndLessSixes <-sum(dbinom(seq(0,5), size = 10, p =1/6))
+pFiveAndLessSixes
+
 # We could have used a cummulative distribution function to figure out this as well:
 pFiveAndLessSixes <- pbinom(5, size = 10, p = 1/6)
 pFiveAndLessSixes
@@ -158,14 +168,14 @@ p185cm
 # No, it is not 0.02385223... that is probability density
 # The normal distribution is continuous: it doesn't really make sense
 # to ask for a probability of a point from its domain.
+
 # Try this:
 # What is the probability that a person is between 180 cm and 185 cm tall
 # if we draw a person at random from a population with 
 # mean height = 178 cm, standard deviation = 15 cm?
 p180_185cm <- dnorm(185, mean = 178, sd = 15) - dnorm(180, mean = 178, sd = 15)
 p180_185cm # oops...
-p180_185cm <- dnorm(180, mean = 178, sd = 15) - dnorm(185, mean = 178, sd = 15)
-p180_185cm # is this right? NO.
+
 # Maybe:
 p180_185cm <- pnorm(185, mean = 178, sd = 15, lower.tail = T) - 
   pnorm(180, mean = 178, sd = 15, lower.tail = T)
@@ -292,61 +302,3 @@ sig < .05
 # Chi-Square test significant: the empirical distribution does not follow
 # the theoretical distribution (i.e. suggests that the expected counts are 
 # different from the observed)
-
-##### ---------------------------------------- ####
-##### Probability Functions LAB
-##### ---------------------------------------- ####
-
-# set plot  parameters
-par(mfrow=c(2,2))
-# sum 100 IID random variables, Chi-Square, m = 10
-chiSqSums100 <- unlist(lapply(seq(1:100), function(x) {
-  sum(rchisq(100, 10))
-}))
-# sum 1000 IID random variables, Chi-Square, m = 10
-hist(chiSqSums100, 50, col="deepskyblue")
-chiSqSums1000 <- unlist(lapply(seq(1:1000), function(x) {
-  sum(rchisq(100, 10))
-}))
-# sum 10000 IID random variables, Chi-Square, m = 10
-hist(chiSqSums1000, 50, col="deepskyblue")
-chiSqSums10000 <- unlist(lapply(seq(1:10000), function(x) {
-  sum(rchisq(1000, 10))
-}))
-hist(chiSqSums10000, 50, col="deepskyblue")
-# sum 1000000 IID random variables, Chi-Square, m = 10
-chiSqSums100000 <- unlist(lapply(seq(1:100000), function(x) {
-  sum(rchisq(1000, 10))
-}))
-hist(chiSqSums100000, 50, col="deepskyblue")
-
-# repeat for Poisson with lambda = 2
-# set plot  parameters
-par(mfrow=c(2,2))
-for (sumSize in c(100, 1000, 10000, 100000)) {
-  poisSums <- unlist(lapply(seq(1:sumSize), function(x) {
-    sum(rpois(1000, 2))
-  }))
-  hist(poisSums, 50, col="red")
-}
-
-# repeat for Normal with mean = 100, sd = 25
-# set plot  parameters
-par(mfrow=c(2,2))
-for (sumSize in c(100, 1000, 10000, 100000)) {
-  normSums <- unlist(lapply(seq(1:sumSize), function(x) {
-    sum(rnorm(1000, mean = 100, sd = 25))
-  }))
-  hist(normSums, 50, col="green")
-}
-
-# repeat for Cauchy with location = 0, scale = 1
-# set plot  parameters
-par(mfrow=c(2,2))
-for (sumSize in c(100, 1000, 10000, 100000)) {
-  cauchySums <- unlist(lapply(seq(1:sumSize), function(x) {
-    sum(rcauchy(1000, location = 0, scale = 1))
-  }))
-  hist(cauchySums, 50, col="orange")
-}
-# ? - "The Witch of Agnesi" :)
