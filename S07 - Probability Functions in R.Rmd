@@ -1,0 +1,490 @@
+# Introduction to R for Data Science
+### Session 07: Probability Functions and Elementary Hypothesis Testing
+
+12/19/2016, Belgrade, Serbia
+
+Organized by: [Data Science Serbia](http//:www.datascience.rs) and [Startit](http://en.startit.rs)
+
+***
+
+## Lecturers
+
+
+![](img/GoranSMilovanovic.jpg)
+
+#### [Goran S. Milovanović](http://www.exactness.net), Phd  
+#### Data Science Mentor at [Springboard](https://www.springboard.com/workshops/data-science), [Data Science Serbia](http://www.datascience.rs)  
+![](img/BrankoKovac.jpg)  
+
+#### [ing Branko Kovač](https://rs.linkedin.com/in/kovacbranko)
+#### Data Scientist @Tradecore, Data Science Mentor at [Springboard](https://www.springboard.com/workshops/data-science), [Data Science Serbia](http://www.datascience.rs)
+
+***
+
+Now we need to learn about the usage of probability functions in R. We will examine what R has to offer in this respect by working out three basics examples: the Binomial distribution, the Poisson distribution, and the Normal (or Gaussian) distribution.
+
+### A. Binomial Distribution
+
+The Binomial distribution models the following, basic statistical experiment: (1) toss a coin that has a probability $p$ for Heads; repeat the experiment $n$ times. The distribution models the number of "*successes*" (e.g. obtaining Heads) in $n$ repeated tosses; each coin toss is known as a *Bernoulli trial* - and constitutes an even more elementary statistical experiment on its own.
+
+The probability of obtaining $k$ successes (conventionally: *Heads*) with probability $p$ from $n$ trials is given by:
+
+$${P(X=k;n,k)} = {{n}\choose{k}}p^{k}(1-p)^{n-k}$$
+where 
+
+$${{n}\choose{k}} = \frac{n!}{k!(n-k)!}$$
+is the binomial coefficient.
+
+Consider the following experiment: a person rolls a fair dice ten times. Q: What is the probability of obtaining five *or less* sixes at random?
+
+We know that R's `dbinom()` represents the binomial probability mass function (p.m.f.). Let's see: the probability of getting *exactly* five sixes at random is:
+
+``` {r echo=T}
+pFiveSixes <- dbinom(5, size = 10, p = 1/6)
+pFiveSixes
+```
+
+Do not be confused by our attempt to model dice rolls by a binomial distribution: in fact, there are only two outcomes here, "*6 is obtained*" with $p = 1/6$ and "*everything else*" with $1-p = 5/6$!
+
+Then, the probability of getting five or less than five sixes from ten statistical experiments is:
+
+``` {r echo=T}
+pFiveAndLessSixes <- sum(
+  dbinom(0, size = 10, p = 1/6),
+  dbinom(1, size = 10, p = 1/6),
+  dbinom(2, size = 10, p = 1/6),
+  dbinom(3, size = 10, p = 1/6),
+  dbinom(4, size = 10, p = 1/6),
+  dbinom(5, size = 10, p = 1/6)
+)
+pFiveAndLessSixes
+```
+
+in order to remind ourselves that the probabilities of all outcomes from a discrete probability distribution - in our case, that "*0 sixes*", "*1 six*", "*2 sixes*", "*3 sixes*", "*4 sixes*", or "*5 sixes*" etc. obtain - will eventually sum up to one. However, let's wrap this upelegantly by using `sapply()`
+
+``` {r echo=T}
+pFiveAndLessSixes <- sum(sapply(seq(0,5), function(x) {
+  dbinom(x, size = 10, p = 1/6)
+}))
+pFiveAndLessSixes
+```
+
+or, even better, by recalling that we are working with a vectorized programming language:
+
+``` {r echo=T}
+pFiveAndLessSixes <-sum(dbinom(seq(0,5), size = 10, p =1/6))
+pFiveAndLessSixes
+```
+
+Of ocurse, we could have used a *cummulative distribution function* (c.d.f) to figure out this as well:
+
+```{r echo=T}
+pFiveAndLessSixes <- pbinom(5, size = 10, p = 1/6)
+pFiveAndLessSixes
+```
+
+Again, do not forget: the binomial distribution models a statistical experiment with two outcomes only. In the present example, its parameter, $p = 1/6$, has a complement of $1-p = 5/6$, and the following semantics: either 5 comes out, OR everything else. The binomial distribution *does not model dice rolls*, but (fair or unfair) *coin tosses*. To model a dice, you need the *multinomial distribution*, which is the multivariate generalization of the binomial. We will cover only some univariate distributions here.
+
+***
+
+### B. Random Number Generation from the Binomial
+
+`rbinom()` will provide a vector of random deviates from the Binomial distribution with the desired parameter, e.g.:
+
+``` {r echo = T}
+# Generate a sample of random binomial variates:
+randomBinomials <- rbinom(100, size = 1, p = .5)
+randomBinomials
+```
+
+Now, if each experiment encompasses 100 coin tosses:
+
+``` {r echo = T}
+randomBinomials <- rbinom(100, size = 100, p = .5)
+randomBinomials # see the difference?
+```
+
+```{r echo = T}
+randomBinomials <- rbinom(100, size = 100000, p = .5)
+length(randomBinomials)
+```
+
+Let's plot the distribution of the previous experiment:
+
+```{r echo = T}
+hist(randomBinomials, n = 50,
+     main = "100000 Statistical Experiments",
+     xlab = "Number of heads",
+     ylab = "Frequency",
+     col = "deepskyblue")
+```
+
+Interpretion: we were running **100** statistical experiments, each time drawing a sample of 100000 observations of a fair coin ($p = .5$). And now,
+
+``` {r echo = T}
+randomBinomials <- rbinom(100000, size = 100000, p = .5)
+hist(randomBinomials, n = 50,
+     main = "100000 Statistical Experiments",
+     xlab = "Number of heads",
+     ylab = "Frequency",
+     col = "deepskyblue")
+```
+
+... we were running **10000** statistical experiments, each time drawing a sample of 100000 observations of a fair coin ($p = .5$)
+
+***
+
+### C. Quantile Function of the Binomial distribution
+
+The *quantile* is defined as the smallest value $x$ such that $F(x) ≥ p$,  where $F$ is the distribution function (c.d.f.):
+
+``` {r echo = T}
+qbinom(p = .01, size = 100, prob = .5)
+qbinom(p = .99, size = 100, prob = .5)
+qbinom(p = .01, size = 200, prob = .5)
+qbinom(p = .99, size = 200, prob = .5)
+```
+
+Now take a look at this:
+
+``` {r echo = T}
+randomUniformNumbers <- runif(100000,0,1)
+hist(randomUniformNumbers, n = 50,
+     main = "100000 Uniform Random numbers on (0,1)",
+     xlab = "X",
+     ylab = "Frequency",
+     col = "orange")
+```
+
+This call has generated 100 uniformly distributed random numbers on an interval from 0 to 1. Note the similarity in the functions: `rbinom()` is for random binomial deviates, `runif()` for random uniform; similarly, we have `dunif()` and `dbinom()`. It's easy to remember the probability functions in R.
+
+Let's generate random *binomial deviates* from *random uniform numbes* by using `qbinom()`:
+
+```{r echo = T}
+randomBinomialNumbers <- qbinom(randomUniformNumbers,
+                                size = 100000,
+                                prob = .5)
+hist(randomBinomialNumbers, n = 50,
+     main = "100000 Statistical Experiments",
+     xlab = "Number of heads",
+     ylab = "Frequency",
+     col = "red")
+```
+
+In other words, and for all those of you who will be interested in running simulations of stochastic models anytime in the future: if you can generate random numbers from a uniform distribution on $(0,1)$, you can also generate random numbers from the binomial distribution - or any other distribution as well...
+
+However, R offers random number functions for a huge number of probability densities...
+
+***
+
+### D. The Poisson Distribution
+
+*Poisson* is a discrete probability distribution with *mean and variance correlated*. This is the distribution of the number of occurrences of independent events in a given interval.
+
+The p.m.f. is given by:
+
+$${P(X=k)} = \frac{\lambda^{k}e^{-\lambda}}{k!}$$
+where $\lambda$ is the average number of events per interval, and $k = 0, 1, 2,...$
+
+For the Poisson distribution, we have that the mean (the expectation) is the same as the variance:
+
+$$X \sim Poisson(\lambda) \Rightarrow \lambda = E(X) = Var(X) $$
+
+*Example.* (Following and adapting from Ladislaus Bortkiewicz, 1898). Assumption: on the average, 10 soldiers in the Prussian army were killed accidentally by horse kick monthly. What is the probability that 17 or more soldies in the Prussian army will be accidently killed by horse kicks during the month? Let's see:
+
+``` {r echo=T}
+tragedies <- ppois(17, lambda=10, lower.tail=FALSE)   # upper tail (!)
+tragedies
+```
+
+Similarly as we have used `pbinom()` to compute cumulative probability from the binomial distribution, here we have used `ppois()` for the Poisson distribution. The `lower.tail=F` argument turned the cumulative into a decumulative (or survivor) function: by calling `ppois(17, lambda=10, lower.tail=FALSE)` we have asked not for $P(X \leq k)$, but for $P(X > k)$ instead. However, if this is the case, our answer is incorrect, and we should have called: `ppois(16, lambda=10, lower.tail=FALSE)` instead. Can you see it? You have to be very careful about how exactly your probability functions are defined (c.f. `Poisson {stats}` documentation at (https://stat.ethz.ch/R-manual/R-devel/library/stats/html/Poisson.html) and find out whether `lower.tail=T` implies $P(X > k)$ or $P(X \geq k)$).
+
+``` {r echo=T}
+# Compare:
+tragedies <- ppois(17, lambda=10, lower.tail=TRUE)   # lower tail (!)
+tragedies
+# this is the answer to the question of what would be the probability of
+# 17 *and and less than 17* deaths
+```
+
+The same logic to generate random deviates as we have observed in the Binomial case is present here; we have `rpois()`:
+
+``` {r echo=T}
+poiss100000 <- rpois(100000,lambda = 5)
+hist(poiss100000,
+     main = "100000 Poisson, Lamba = 5",
+     xlab = "Events",
+     ylab = "Frequency",
+     col = "blue")
+```
+
+Let's study one important property of the Poisson distribution:
+
+``` {r echo = T}
+lambda <- seq(1,100,1)
+poissonMean <- sapply(lambda, function(x) {
+  mean(rpois(100000,x))
+})
+poissonVar <- sapply(lambda, function(x) {
+  var(rpois(100000,x))
+})
+# plot!
+plot(poissonMean, poissonVar,
+     main = "An important property of the Poisson",
+     xlab = "E(X)", ylab = "Var(X)",
+     col = "firebrick")
+```
+
+The moral of the story: use the Poisson distribution to model discrete stochastic phenomena where you expect the mean to be *correlated* with the variance.
+
+And now for something completelly different: a continuous probability function.
+
+***
+
+### E. The Gaussian (Normal) Distribution
+
+Back to school: what is the probability that a person is 185 cm tall if we draw her at random from a population with mean height = 178 cm, standard deviation = 15 cm...
+
+``` {r echo=T}
+p185cm <- dnorm(185, mean = 178, sd = 15) #?
+p185cm
+```
+
+No, it is not 0.02385223... that is probability density. The normal distribution is continuous: it doesn't really make sense to ask for a probability of a data point from its domain. Try this: what is the probability that a person is between 180 cm and 185 cm tall if we draw a person at random from a population with mean height = 178 cm, standard deviation = 15 cm?
+
+``` {r echo=T}
+p180_185cm <- dnorm(185, mean = 178, sd = 15) - dnorm(180, mean = 178, sd = 15)
+p180_185cm # oops...
+```
+
+Ooops. Maybe:
+``` {r echo=T}
+p180_185cm <- pnorm(185, mean = 178, sd = 15, lower.tail = T) - 
+  pnorm(180, mean = 178, sd = 15, lower.tail = T)
+p180_185cm # yes, that is correct: 0.1265957
+```
+
+That is correct: 0.1265957. Note the usage of `dnorm()` and `pnorm()` for density and the c.d.f. respectively, as for any other probability function in R.
+
+Gaussian, the bell curve, the famous one (this is going to take half an hour in $\LaTeX$ to write out):
+
+$$f(x|\mu,\sigma^2) = \frac{1}{\sqrt{2\sigma^2\pi}}e^{-\frac{(x-\mu)^2}{2\sigma^2}}$$
+
+(ohh...) where $\mu$ is the distribution mean, $\sigma^2$ its variance, **and be very, very careful to notice** how R's functions for the normal distribution use $\sigma$ - the *standard deviation* instead of variance:
+
+$$\sigma = \sqrt{\frac{\sum_{i=1}^{n}(x_i-\overline{x})^2}{n-1}}$$
+
+Let's plot it:
+
+``` {r echo=T}
+x <- seq(0,150,.01)
+# set plot parameters
+par(mfrow=c(1,2))
+curve(dnorm(x,mean=75,sd=15),
+      from = 0, 
+      to = 150, 
+      main = "Gaussian Density",
+      ylab = "Density",
+      col = "blue")
+curve(pnorm(x,mean=75,sd=15),
+      from = 0, 
+      to = 150, 
+      main = "Gaussian Cumulative",
+      ylab = "P(X<=x)",
+      col = "blue")
+# reset plot parameters
+par(mfrow=c(1,1))
+```
+
+***
+
+### F. Checking whether a variable has a normal distribution
+
+```{r echo=T}
+library(datasets)
+data(iris)
+
+# The Kolmogorov-Smirnov Test
+ksSLength <- ks.test(iris$Sepal.Length,
+                     "pnorm",
+                     mean(iris$Sepal.Length),
+                     sd(iris$Sepal.Length),
+                     alternative = "two.sided",
+                     exact = NULL)
+ksSLength
+```
+
+Good. The K-S test says this is a normal distribution:
+
+``` {r echo=T}
+hist(iris$Sepal.Length,
+     xlab = "Sepal Length",
+     ylab = "Frequency",
+     col = "gold")
+```
+
+And what do you think?
+
+We will try to test for normality by using the Shapiro-Wilk Test: it is better for small samples, but unlike K-S, it applies to the Normal distribution only.
+**NOTE:** The Shapiro-Wilk is *the most powerful test* given for a given $\alpha$ and csompared to other tests similar in purpose.
+
+``` {r echo=T}
+swPLength <- shapiro.test(iris$Sepal.Length)
+swPLength
+```
+
+Now this is fun: S-W test says it is not normally distributed... Take-home message: good luck with normality tests.
+
+More often than not, you will want to take a look at the Q-Q plot to determine whether something is any similar to a target distribution or not:
+
+``` {r echo = T}
+# plots to check the normality assumption
+theoNormSLength <- qnorm(ppoints(iris$Sepal.Length),
+                         mean(iris$Sepal.Length),
+                         sd(iris$Sepal.Length))
+# ?ppoints - produces evenly spaced probability points
+# qqplot
+qqplot(theoNormSLength,iris$Sepal.Length,
+       main = "Q-Q Plot: Sepal Length",
+       xlab = "Theoretical Quantiles",
+       ylab = "Empirical Quantiles",
+       xlim = c(min(theoNormSLength),max(theoNormSLength)),
+       ylim = c(min(theoNormSLength),max(theoNormSLength)),
+       pch = 19,
+       cex = .5,
+       cex.main = .7,
+       cex.lab = .65,
+)
+abline(0,1,col="red")
+```
+
+What would you say now: is Sepal Length from Iris normally distributed?
+
+***
+
+### G. The Chi-Square Distribution and the related statistical test
+
+*Theory:* say X follows a Standard Normal Distribution ($\mathcal{N}(0,1)$). Take *k* = 3 such variables, square them, sum up the squares, and repeat the experiment 100,000 times.
+
+``` {r echo = T}
+stdNormals3 <- unlist(lapply(seq(1,100000), function(x) {
+  sum((rnorm(3, mean = 1, sd = 1))^2)
+}))
+```
+
+**Q:** How are these sums of standar normal distributions distributed?
+
+``` {r echo = T}
+# set plot parameters
+hist(stdNormals3, 50, main = "k = 3",
+     xlab = "Sums of squared Gaussians",
+     ylab = "Frequency",
+     col = "steelblue")
+```
+
+Repeat for k = 30:
+
+``` {r echo = T}
+stdNormals30 <- unlist(lapply(seq(1,100000), function(x) {
+  sum((rnorm(30, mean = 1, sd = 1))^2)
+}))
+hist(stdNormals30, 50, main = "k = 30",
+     xlab = "Sums of squared Gaussians",
+     ylab = "Frequency",
+     col = "steelblue")
+```
+
+Here it is: the sum of squared IID random variables - each of them distributed as $\mathcal{N}(0,1)$ - follows a $\chi^2$ distribution.
+
+``` {r echo=T}
+par(mfrow=c(1,2))
+curve(dchisq(x,3), from = 0, to = 40, main = "k = 3", col = "blue",
+      xlab = "x", ylab = "Density")
+curve(dchisq(x,30), from = 0, to = 120, main = "k = 30", col = "blue",
+      xlab = "x", ylab = "Density")
+```
+
+This probability distribution plays a very important role in statistical hypothesis testing; its domain encompasses strictly positive real numbers, and the probability density is given by:
+
+$$f(x;k) = \begin{cases}{2}{\frac{x^{(k/2-1)e^{-x/2}}}{2^{k/2}\Gamma(\frac{k}{2})}}, \:\:{for}\:\ x > 0;\\{0,\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\:\: otherwise}\end{cases}$$
+
+where $\Gamma$ is the gamma function, with a property of $\Gamma(n)=(n-1)!$ for any positive integer $n$.
+
+Assume the following: an urn contains white, blue, and red balls in proportion of 5:3:2, and we draw a sample of size `n = 100` from the urn. Thus,
+
+``` {r echo=T}
+n <- 100
+```
+
+Our task is to determine whether the sample reflects the hypothesized distribution of balls in the urn. Let's simulate this experiment in R:
+
+``` {r echo=T}
+# Step 1: Population parameters (probabilities)
+populationP <- c(.5, .3, .2)
+expectedCounts <- n*populationP
+expectedCounts
+```
+
+Of course, 50 white, 30 blue, and 20 red balls is the expected outcome of the experiment, given the population parameters. We are dealing with a *multinomial* distribution here, obviously. Let's start sampling from it, by first providing the population parameters to it:
+
+``` {r echo=T}
+# Step 2: Sampling
+# random draw from a multinomial distribution of three events:
+sample <- as.numeric(rmultinom(1, 100, prob = populationP))
+sample
+```
+
+Does this sample deviates significantly from the expected counts (i.e. does our "theory" of population parameters fit the empirical data well)? We use the $\chi^2$-test to check it out:
+
+``` {r echo=T}
+# Step 3: Chi-Square Statistic:
+chiSq <- sum(((sample - expectedCounts)^2)/expectedCounts)
+chiSq
+df <- 3 - 1 # k == 3 == number of events
+df
+sig <- pchisq(chiSq, df, lower.tail=F) # upper tail
+sig
+sig < .05
+```
+
+The $\chi^2$ statistic, let us refresh our Stats 101, would be...
+
+$$\chi^2 = \sum_{i=1}^{n}\frac{(Observed\:Counts_i - Expected\:Counts_i)^2}{Expected\: Counts_i}$$
+
+And the probability that we are about to commit a $Type\:I\: Error$ (i.e. accepting that the Observed Counts are different from the Expected Counts while in the population they are not) must be assessed from the cumulative  $\chi^2$ distribution, provided by `pchisq()` in R: `pchisq(chiSq, df, lower.tail=F)` - going for the upper tail to figure out how improbable would a particular test value be from a $\chi^2$ distribution with `df` degrees of freedom.
+
+Now with a sample from a different distribution:
+``` {r echo = T}
+# random draw from a multinomial distribution of three events:
+sample <- as.numeric(rmultinom(1, 100, prob = c(.3, .3, .4)))
+sample
+```
+
+``` {r echo = T}
+# Chi-Square Statistic:
+chiSq <- sum(((sample - expectedCounts)^2)/expectedCounts)
+chiSq
+df <- 3 - 1 # k == 3 == number of events
+df
+sig <- pchisq(chiSq, df, lower.tail=F)
+sig
+sig < .05
+```
+
+**N.B.** An exercise on simulating the behavior of *sums of Independently and Identically Distributed* (IID) random variables accompanies the code for this session.
+
+***
+
+## Readings for Session 08:
+
+*Session 08 is on Correlations* You need to refresh your knowlegde on the following concepts to be in order to follow the next session:
+
++ *Covariance*
++ *Pearson's coefficient of correlation*
++ *Spearman's coefficient of correlation*
++ *Partial correlation*
++ *Part (or semi-partial) correlation*
+
+***
+
+#### [Data Science Serbia](http://www.datascience.rs) 2016.
