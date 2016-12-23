@@ -60,7 +60,7 @@ num_vect_2 <- c(1, 14, 2, NA, 999, 101) # numerics
 num_vect_2
 ```
 
-We use `c()` a lot in R. Obviously, it's an in-built function, and what it does is called *concatenation*. For now, think of vector concatenation simply as of "putting things together in a new vector":
+We use `c()` a lot in R. Obviously, it is an in-built function, and what it does is called *concatenation*. For now, think of vector concatenation simply as of "putting things together in a new vector":
 
 ``` {r echo=T}
 log_vect_2 <- c(TRUE, FALSE, FALSE, TRUE, TRUE, TRUE) # put some logicals together
@@ -246,7 +246,7 @@ matr <- matrix(data = c(1,3,5,7,NA,11), nrow = 2, ncol = 3) # 2x3 matrix
 matr
 ```
 
-Vectors in R are dimensionless; matrices, as mentioned, have a dimension of two:
+Vectors in R are **dimensionless**; matrices, as mentioned, have a dimension of two:
 
 ``` {r echo=T}
 dim(c(1,2,2,4))
@@ -379,6 +379,8 @@ What about multiplying x1 with transpose(x2)? The fast way:
 
 ``` {r echo=T}
 # tcrossproduct() in R:
+arr1
+t(arr2)
 tcrossprod(arr1, arr2) # faster
 ```
 
@@ -422,6 +424,8 @@ arr1 %*% arr2
 ```
 
 ``` {r echo=T}
+t(arr1)
+arr2
 t(arr1) %*% arr2
 ```
 
@@ -435,6 +439,8 @@ arr1 %*% t(arr2)
 ```
 
 ``` {r echo=T}
+arr1
+t(arr2)
 tcrossprod(arr1, arr2)
 ```
 
