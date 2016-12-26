@@ -1,0 +1,490 @@
+# Introduction to R for Data Science
+### Session 08: Correlation + Partial and Part Correlations
+
+12/26/2016, Belgrade, Serbia
+
+Organized by: [Data Science Serbia](http//:www.datascience.rs) and [Startit](http://en.startit.rs)
+
+***
+
+## Lecturers
+
+
+![](img/GoranSMilovanovic.jpg)
+
+#### [Goran S. Milovanović](http://www.exactness.net), Phd  
+#### Data Science Mentor at [Springboard](https://www.springboard.com/workshops/data-science), [Data Science Serbia](http://www.datascience.rs)  
+![](img/BrankoKovac.jpg)  
+
+#### [ing Branko Kovač](https://rs.linkedin.com/in/kovacbranko)
+#### Data Scientist @Tradecore, Data Science Mentor at [Springboard](https://www.springboard.com/workshops/data-science), [Data Science Serbia](http://www.datascience.rs)
+
+***
+
+Correlations, correlations everywhere..! One would think that all that Data Scientists do nowadays is to look for them. Not even half true, however, they are of essential importance for our work. In this session, we introduce the concept of correlation, and expand - in a gentle way, since we are still not talking about multiple linear regression - upon the concepts of partial and part correlation. We will present what R has to offer from its {base} fuctionality, introduce {Hmisc}, and a relatively new package, {ppcor}, which does a great job in computing partial and part correlations. And for visualising correlation matrices: {corrplot}, of course. 
+
+***
+
+Getting ready, alright:
+
+``` {r message = F}
+# clear all
+rm(list=ls())
+
+# libraries
+library(datasets)
+library(dplyr)
+library(corrplot)
+library(ggplot2)
+library(ppcor)
+library(Hmisc)
+
+# data
+data(iris)
+### Iris data set description:
+# https://stat.ethz.ch/R-manual/R-devel/library/iriss/html/iris.html
+```
+
+### A. Covariance, Standardization, and Correlation
+
+We will start by inspecting two variables from the `iris` data set: `$Sepal.Length` and `$Petal.Length`:
+
+``` {r echo = T}
+### EDA plots
+# plot layout: 2 x 2
+par(mfcol = c(2,2))
+# boxplot iris$Sepal.Length
+boxplot(iris$Sepal.Length,
+        horizontal = TRUE, 
+        xlab="Sepal Length")
+# histogram: iris$Sepal.Length
+hist(iris$Sepal.Length, 
+     main="", 
+     xlab="Sepal.Length", 
+     prob=T)
+# overlay iris$Sepal.Length density function over the empirical distribution
+lines(density(iris$Sepal.Length),
+      lty="dashed", 
+      lwd=2.5, 
+      col="red")
+# boxplot iris$Petal.Length
+boxplot(iris$Petal.Length,
+        horizontal = TRUE, 
+        xlab="Petal Length")
+# histogram: iris$Petal.Length,
+hist(iris$Petal.Length,
+     main="", 
+     xlab="Petal Length", 
+     prob=T)
+# overlay iris$Petal.Length density function over the empirical distribution
+lines(density(iris$Petal.Length),
+      lty="dashed", 
+      lwd=2.5, 
+      col="red")
+# reset plot layout
+par(mfcol = c(1,1))
+```
+
+**Q:** Is there a linear relationship between these two variables? Let's see:
+
+``` {r echo = T}
+## scatter plot w. {base}
+plot(iris$Sepal.Length, iris$Petal.Length,
+     main = "Sepal Length vs Petal Length",
+     xlab = "Sepal Length", ylab = "Petal Length",
+     cex.main = .85,
+     cex.lab = .75)
+```
+
+Hm. One could tell there is something going on here... A smarter plot:
+
+``` {r echo = T}
+ggplot(data = iris, aes(x = Sepal.Length,
+                        y = Petal.Length,
+                        color = Species)
+       ) + 
+  geom_point() + 
+  geom_smooth(method = lm, se = F) +
+  theme_classic()
+```
+
+There seems to be *more than one line* important to describe this data set; however, we will simplify for now:
+
+``` {r echo = T}
+ggplot(data = iris, aes(x = Sepal.Length,
+                        y = Petal.Length)) + 
+  geom_point(color = "darkblue", size = 1.5) + 
+  geom_point(color = "white", size = 1) +
+  geom_smooth(method = lm, se = F) +
+  theme_classic()
+```
+
+Leaving aside the important question of whether there is a linear relationship between `Sepal.Length` and `Petal.Length` in `iris` for now, we ask: if it were a linear relationship, *how good a linear relationship would it make*? The answer is provided by computing the Pearson's coefficient of linear correlation.
+
+What is this:
+
+``` {r echo = T}
+cov(iris$Sepal.Length, iris$Petal.Length)
+```
+
+**Covariance**. Given two random variables (RVs), $X$ and $Y$, their (sample) covariance is given by:
+
+$$cov(X,Y) = E[(X-E[X])(Y-E[Y])] = \frac{(X-\bar{X})(Y-\bar{Y})}{N-1}$$
+where $E[]$ denotes the *expectation* (the *mean*, if you prefer), $\bar{X}$ is the mean of $X$, $\bar{Y}$ is the mean of $Y$, and $N$ is the sample size.
+
+Pearson's coefficient of correlation is nothing else than a covariance between $X$ and $Y$ upon their *standardization*. The standardization of a RV - widely known as a variable *z-score* - is obtained upon substracting all of its values from the mean, and dividing by the standard deviation; for the **i**-th observation of $X$:
+
+$$z(x_i) = \frac{x_i-\bar{X}}{\sigma}$$
+Thus, 
+
+``` {r echo = T}
+zSepalLength <- (iris$Sepal.Length-mean(iris$Sepal.Length))/sd(iris$Sepal.Length)
+zPetalLength <- (iris$Petal.Length-mean(iris$Petal.Length))/sd(iris$Petal.Length)
+cov(zSepalLength, zPetalLength)
+```
+
+is the correlation of `Sepal.Length` and `Petal.Length`; let's check with {base} R function `cor()` which computes the correlation:
+
+``` {r echo = T}
+cor(iris$Sepal.Length, iris$Petal.Length, method = "pearson")
+```
+
+Right. There are many formulas that compute `r`, the correlation coefficient; however, understanding that is simply the covariance of standardized RVs is essential. Once you know to standardize the variables and how to compute covariance (and that is easy), you don't need to care about expressions like:
+
+$$r_{XY} = \frac{N\sum{XY}-(\sum{X})(\sum{Y})}{\sqrt{[N\sum{X^2}-(\sum{X})^2][N\sum{Y^2}-(\sum{Y})^2]}}$$
+
+This and similar expressions are good, and especially for two purposes: first, they will compute the desired value of the correlation coefficient in the end, that's for sure, and second, writing them up in `RMarkdown` really helps mastering $\LaTeX$. Besides these roles they play, there is really nothing essentialy important in relation to them.
+
+Somewhat easier to remember:
+
+$$r_{XY} = \frac{cov(X,Y)}{\sigma(X)\sigma(Y)}$$
+- the covariance of $X$ and $Y$, divided by the product of their standard deviations.
+
+There's a nice `scale()` function that will quicken-up the computation of *z-scores* in R for you:
+
+``` {r echo = T}
+zSepalLength1 <-  scale(iris$Sepal.Length, center = T, scale = T)
+sum(zSepalLength1 == zSepalLength) == length(zSepalLength)
+```
+
+Do `?scale` - useful things can be done with it.
+
+*** 
+
+### B. Correlation Matrices: Visualization and Treatment of Missing Values
+
+The {base} `cor()` function produces correlation matrices too:
+
+``` {r echo = T}
+cor(iris[,c(1:4)])
+```
+
+Missing data can be treated by *listwise* or *pairwise* deletion. In *listwise* deletion, any observation (== row) containing at least one `NA`(s) will be removed before the computation. Set the `use` argument in `cor` to `complete.obs` in order to use listwise deletion:
+
+``` {r echo = T}
+dSet <- iris
+# Remove one nominal variable - Species
+dSet$Species <- NULL
+# introduce NA in dSet$Sepal.Length[5]
+dSet$Sepal.Length[5] <- NA
+# Pairwise and Listwise Deletion:
+cor1a <- cor(dSet,use="complete.obs") # listwise deletion
+cor1a
+```
+
+*Pairwise deletion* will compute the correlation coefficient using all available data. It will delete only the data corresponding to the missing values from one vector in another, and compute the correlation coefficient from what is left; set `use` to `pairwise.complete.obs` to use this approach:
+
+``` {r echo = T}
+cor1b <- cor(dSet, use = "pairwise.complete.obs") # pairwise deletion
+cor1b
+```
+
+`use = "all.obs"` will produce an error in the presence of any `NA`s:
+
+``` {r echo = T, error = T}
+cor1c <- cor(dSet, use = "all.obs") # all observations - error
+cor1c
+```
+
+To propagate `NA`s through the matrix wherever they are present in the respective columns, `use = "everything"` (this is the *default*; try `cor(dSet)`):
+
+``` {r echo = T}
+cor1d <- cor(dSet, use = "everything") # all observations - error
+cor1d
+```
+
+There are many available methods to visualize correlation matrices in R. The {base} approach would be to use `plot()` on a `data.frame` like in the following example:
+
+``` {r echo = T}
+# {base} approach
+data("mtcars")
+str(mtcars)
+```
+
+``` {r echo = T}
+corMatrix <- cor(mtcars[, 1:8])
+plot(as.data.frame(corMatrix))
+```
+
+But there's also the fantastic {corrplot} package to visualize correlation matrices:
+
+``` {r echo = T}
+# {corrplot} approach
+corMatrix <- cor(mtcars)
+# {corrplot} "circle" method: 
+corrplot(corMatrix, 
+         method="circle")
+```
+
+``` {r echo = T}
+# {corrplot} "ellipse" method: 
+corrplot(corMatrix, 
+         method="ellipse")
+```
+
+``` {r echo = T}
+# "mixed"
+corrplot.mixed(corMatrix, 
+               lower="ellipse", 
+               upper="circle")
+```
+
+***
+
+### C. Significance Testing for The Correlation Coefficient 
+
+A fact about R: {base} `cor()` does not test for Type I Errors. True. There is the `cor.test()` function that you can use on a pair of variables:
+
+``` {r echo = T}
+cor.test(iris$Sepal.Length, iris$Petal.Length)
+```
+
+To assess the pairwise Type I Error rate from a correlation matrix, use `rcorr()` from {Hmisc}:
+
+``` {r echo = T}
+dSet <- as.matrix(iris[, c(1:4)])
+cor2 <- rcorr(dSet, 
+              type="pearson")
+cor2$r # correlations
+```
+
+Your p-values are found in:
+
+``` {r echo = T}
+cor2$P # significant at
+```
+
+and the respective number of observations from which the correlations were computed (N.B. `rcorr()` uses Pairwise deletion!):
+
+``` {r echo = T}
+cor2$n # num. observations
+```
+
+***
+
+### D. Other methods: Spearman
+
+What if one (or more than one) variable is measured on the ordinal scale only? Use Spearman's $\rho$ (essentially, Pearson's R *over ranks*):
+
+``` {r echo = T}
+cor2b <- rcorr(as.matrix(dSet),
+               type="spearman") # NOTE: as.matrix
+cor2b
+```
+
+### E. Partial and Part Correlation
+
+The concepts of *partial* and *part correlation* are useful in the description of *mediation*. We have two RVs, $X$ and $Y$, and we are interested in the strength of their linear relationship. However, there is also another variable (or, a set of variables), $Z$, that is related to $X$ and $Y$, and we ask: how does this additional $Z$ variable affects the relationship between $X$ and $Y$?
+
+*Partial correlation* presents the most straightforward answer to this question. It is the coefficient of linear correlation that one obtains between $X$ and $Y$ after removing the *shared variance* of $X$ and $Z$, and of $Y$ and $Z$.
+
+We will use the {ppcor} package to compute partial correlations in the following example. Before that: can we explain partial correlation conceptually? It turns out that is not difficult to explain what partial correlation is once the simple linear regression model is introduced, but we haven't done that yet. Ok then, here goes a look ahead:
+
+``` {r echo = T}
+linFit <- lm(data = iris,
+             Petal.Length ~ Sepal.Length)
+linFitPlot <- data.frame(
+  x = iris$Sepal.Length,
+  y = iris$Petal.Length,
+  predicted = linFit$fitted.values,
+  residuals = linFit$residuals
+)
+ggplot(data = linFitPlot,
+       aes(x = x, y = y)) +
+  geom_smooth(method = lm, se = F, color = "blue", size = .25) +
+  geom_segment(aes(x = x, y = predicted, 
+                   xend = x, yend = predicted+residuals),
+               color = "blue", size = .2) +
+  geom_point(aes(x = x, y = y), color = "blue", size = 1.25) +
+  geom_point(aes(x = x, y = y), color = "white", size = 1) +
+  geom_point(aes(x = x, y = predicted), color = "blue", size = 1) +
+  xlab("Sepal.Length") + ylab("Petal.Length") +
+  theme_classic()
+```
+
+Never mind about this code chunk; we will discuss it thoroughly in the next session. For now, the explanation goes something like this: we have `Sepal.Length` on the x-axis, and `Petal.Length` on the y-axis, producing a scatter plot of a sort that we have already seen in the beginning. Now, intuitively, try to imagine the line that crosses the cloud of data points in the scatter plot somehow "best describing" the relationship between `Sepal.Length` and `Petal.Length`; such a line is plotted here. If the relationship between the two variables was perfectly linear, all points would fall on a straight line. In this plot, the blue dots represents the predictions from the best-fitting line in a plane where the x and y axes are spawned by the variables of interest. However, the relationship is not perfectly linear, as it can be observed from the vertical deviations of the data points from the line. The distance between what a linear model would predict (blue points) and the actual data (white points) is called a *residual*. Residuals are represented by vertical lines connecting the model predictions and actual data points in this plot. As we will discover in the next session, the best-fitting line is exactly the one that *minimizes* these residuals that are considered as *model errors*.
+
+Let's get back to partial correlation now. Take $X$ to be `Sepal.Length`, $Y$ to be `Petal.Length`, and $Z$ to be `Sepal.Width`: how does the correlation between $Z$ and $X$, on one, and $Z$ and $Y$, on the other hand, affects the correlation betwen $X$ and $Y$? Let's plot $Z$ vs. $X$ and $Z$ vs. $Y$:
+
+``` {r echo = T}
+linFit <- lm(data = iris,
+             Sepal.Length ~ Sepal.Width)
+linFitPlot1 <- data.frame(
+  x = iris$Sepal.Width,
+  y = iris$Sepal.Length,
+  predicted = linFit$fitted.values,
+  residuals = linFit$residuals
+)
+linFit <- lm(data = iris,
+             Petal.Length ~ Sepal.Width)
+linFitPlot2 <- data.frame(
+  x = iris$Sepal.Width,
+  y = iris$Petal.Length,
+  predicted = linFit$fitted.values,
+  residuals = linFit$residuals
+)
+linFitPlot <- rbind(linFitPlot1, linFitPlot2)
+linFitPlot$Plot <- factor(c(rep("Sepal.Length",150), rep("Petal.Length",150)),
+                             levels = c("Sepal.Length", "Petal.Length"))
+
+ggplot(data = linFitPlot,
+       aes(x = x, y = y)) +
+  geom_smooth(method = lm, se = F, color = "blue", size = .25) +
+  geom_segment(aes(x = x, y = predicted, 
+                   xend = x, yend = predicted+residuals),
+               color = "blue", size = .2) +
+  geom_point(aes(x = x, y = y), color = "blue", size = 1.25) +
+  geom_point(aes(x = x, y = y), color = "white", size = 1) +
+  geom_point(aes(x = x, y = predicted), color = "blue", size = 1) +
+  xlab("Sepal.Width") + ylab("") +
+  theme_classic() +
+  facet_grid(. ~ Plot) +
+  theme(strip.background = element_blank()) +
+  theme(axis.text.x = element_text(size = 6)) + 
+  theme(axis.text.y = element_text(size = 6)) 
+```
+
+`Sepal.Width` has some correlation with both `Sepal.Length` and `Petal.Length`; upon plotting the best fitting lines, we can observe some residuals on both plots too. *Partial correlation* of `Sepal.Length` and `Petal.Length`, while controlling for `Sepal.Width`, is nothing else than the correlation between the residuals of `Sepal.Length` and `Petal.Length` following the linear regresson of `Sepal.Width` on both variables:
+
+``` {r echo = T}
+partialCor <- cor(linFitPlot$residuals[1:150],  # Sepal.Length residuals
+                  linFitPlot$residuals[151:300] # Petal.Length residuals
+)
+partialCor
+```
+
+In comparison to:
+
+``` {r echo = T}
+cor(iris$Sepal.Length, iris$Petal.Length)
+```
+
+we can conclude that the coefficient of linear correlation between these two variables increases after controlling for the effect of `Sepal.Width`.
+
+In {ppcor}, the same partial correlation would be computed in the following way:
+
+``` {r echo = T}
+# partial correlation w. {ppcor}
+dataSet <- iris
+dataSet$Species <- NULL
+partialCor1 <- pcor.test(dataSet$Sepal.Length, dataSet$Petal.Length,
+                         dataSet$Sepal.Width,
+                         method = "pearson")
+partialCor1$estimate
+```
+
+And of course:
+
+``` {r echo = T}
+partialCor1$p.value
+```
+
+``` {r echo = T}
+partialCor1$statistic
+```
+
+For the matrix of partial correlations, where the correlation of each pair of variables is computed after controlling for the effects of all the remaining variables, {ppcor} offers:
+
+``` {r echo = T}
+#### partial correlation in R
+dataSet <- iris
+dataSet$Species <- NULL
+irisPCor <- pcor(dataSet, method="pearson")
+irisPCor$estimate # partial correlations
+```
+
+``` {r echo = T}
+irisPCor$p.value # results of significance tests
+```
+
+``` {r echo = T}
+irisPCor$statistic
+# t-test on n-2-k degrees of freedom ; k = num. of variables conditioned
+```
+
+Good. And now, what a *part* - also known as *semi-partial* correlation would be? Take a look again at the previous plot, where `Sepal.Width` predicts `Sepal.Length` on the left, and `Petal.Length` on the right panel; residuals from both linear regressions are present. Partial correlation of `Sepal.Length` and `Petal.Length` was obtained by removing the effect of `Sepal.Width` from both variables, and, in effect, all that we had to do to obtain was to compute the correlation coefficient from the residuals - or, *from what remains after removing what was predicted by* `Sepal.Width` *from these two variables*. A *semi-partial*, or *part correlation* would be obtained if we had removed the effect of `Sepal.Width` from the second variable only: that would be `Petal.Length` in this case. It results in a correlation between (a) `Sepal.Length` and (b) what is left from `Petal.Length` (the residuals, Ok) after controlling for the effect of `Sepal.Width`:
+
+``` {r echo = T}
+partCor <- cor(iris$Sepal.Length,  # Sepal.Length in itself
+            linFitPlot$residuals[151:300] # Petal.Length residuals
+            )
+partCor
+```
+
+In {ppcor}, this part correlation is obtained by:
+
+``` {r echo = T}
+partCor <- spcor.test(dataSet$Sepal.Length, dataSet$Petal.Length,
+                      dataSet$Sepal.Width,
+                      method = "pearson")
+# NOTE: this is a correlation of dataSet$Sepal.Length w. dataSet$Petal.Length
+# when the variance of dataSet$Petal.Length (2nd variable) due to
+# dataSet$Sepal.Width is removed!
+partCor$estimate
+```
+
+As ever, the p-value:
+
+``` {r echo = T}
+partCor$p.value
+```
+
+and the t-test, of which we still need to learn about:
+
+``` {r echo = T}
+partCor$statistic
+```
+
+If we're interested in a matrix of semi-partial correlations, where the first variable - the one from which no effects of any other variables will be removed - is found rows, and the second variable - the one from which the effects of all the remaining variables in the data set will be removed - found in columns:
+
+``` {r echo = T}
+irisSPCor <- spcor(dataSet, method = "pearson")
+```
+
+``` {r echo = T}
+irisSPCor$estimate
+```
+
+``` {r echo = T}
+irisSPCor$p.value
+```
+
+``` {r echo = T}
+irisSPCor$statistic
+```
+
+To learn more about the great {ppcor} package: [An R Package for a Fast Calculation to Semi-partial Correlation Coefficients (2015), Seongho Kim, Biostatistics Core, Karmanos Cancer Institute, Wayne State University.](http://www.ncbi.nlm.nih.gov/pmc/articles/PMC4681537/)
+
+***
+
+## Readings for Session 09:
+
+*Session 09 will introduce the Simple Linear Regression Model*, while David M. Lane's online tutorial - a part of the following excellent resource: [Online Statistics Education: An Interactive Multimedia Course of Study - Developed by Rice University (Lead Developer), University of Houston Clear Lake, and Tufts University](http://onlinestatbook.com/2/index.html) - should be more than enough to refresh the basic math of Simple Linear Regression:
+
++ [Regression, by David M. Lane](http://onlinestatbook.com/2/regression/regression.html)
+
+You should read everything up to Section 9: Introduction to Multiple Regression.
+
+***
+
+#### [Data Science Serbia](http://www.datascience.rs) 2016.

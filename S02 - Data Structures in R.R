@@ -1,20 +1,20 @@
 
 ## Introduction to R for Data Science
-## ═════════════════════════════════════════
+## -----------------------------------------
 
 ## Lecturers
-## ══════════════════════════════════════════════════════════════════════════════════
+## ----------------------------------------------------------------------------------
 # Goran S. Milovanović, Phd
 # Data Science Mentor @Springboard, Data Science Serbia
 # ing Branko Kovač, Data Scientist @Tradecores
 # Data Science Mentor @ Springboard, Data Science Serbia
-## ══════════════════════════════════════════════════════════════════════════════════
+## ----------------------------------------------------------------------------------
 
 ## SESSION 02: DATA STRUCTURES IN R
-## ═════════════════════════════════════════
+## -----------------------------------------
 
 ### A. Data Types in R, Subsetting, and Coercion
-## ═══════════════════════════════════════════════════════
+## -------------------------------------------------------
 
 # clear all
 rm(list=ls())
@@ -69,7 +69,6 @@ not_na
 sort(test, decreasing = T) # using sort() function
 test[order(test, decreasing = T)] # or with order() function
 
-
 # The difference between sort() and order():
 someVector <- c(7,8,1,2)
 sort(someVector, decreasing = T) # returns a vector sorted
@@ -78,6 +77,7 @@ order(someVector, decreasing = T) # returns a vector of indices to sort the inpu
 # Vector sequences
 seq(1,22,by = 2) # seq is for "sequence"
 rep(1, 4) # rep means: "replicate"
+rep(c(1,2,3), 4) # rep means: "replicate"
 num_vect_2
 rep(num_vect_2, 2) # replicate num_vect_2, 2 times
 
@@ -94,25 +94,29 @@ class(new_combo_vect_2) # all characters: coercion in R
 # Coercion order in R: logical < integer < numeric < complex < character < list.
 
 ### B. Matrices
-## ═══════════════════════════════════════════════════════
+## -------------------------------------------------------
 
-matr <- matrix(data = c(1,3,5,7,NA,11), nrow = 2, ncol = 3) # 2x3 matrix
+matr <- matrix(data = c(1,3,5,7,NA,11), 
+               nrow = 2, 
+               ncol = 3) # 2x3 matrix
 matr
 class(matr) # yes, it's matrix
 typeof(matr) # double as expected 
 
-matr[,2] # 2nd column
-matr[3,] # oops, out of bounds, there's no 3rd row
-matr[2,3] # element in 2nd row and 3rd column
+matr[, 2] # 2nd column
+matr[3, ] # oops, out of bounds, there's no 3rd row
+matr[2, 3] # element in 2nd row and 3rd column
 
-matr_2 <- matrix(data = c(1,3,5,"7",NA,11), nrow = 2, ncol = 3) # another 2x3 matrix
+matr_2 <- matrix(data = c(1,3,5,"7",NA,11), 
+                 nrow = 2, 
+                 ncol = 3) # another 2x3 matrix
 
 class(matr_2) # matrix again
 typeof(matr_2) # but not double anymore, type conversion in action!
 t(matr_2) # transponed matr_2
 
 ### C. Scalar vs. Vector Operators in R
-## ═══════════════════════════════════════════════════════
+## -------------------------------------------------------
 
 arr1 <- seq(2,20,2)
 arr2 <- seq(1,19,2)
@@ -128,20 +132,26 @@ arr1 ^ arr2
 
 # Never forget about  recylcing in R:
 n1 <- c(1,2,3)
+n1
 n2 <- c(4,5,6,7)
+n2
 n1 + n2
 
 # scalar ("inner", "dot") product in R:
+arr1
+arr2
 arr1 %*% arr2
 # again:
 t(arr1) %*% arr2
 # NOTE: see https://stat.ethz.ch/R-manual/R-devel/library/base/html/matmult.html
-crossprod(arr1,arr2) # faster
+crossprod(arr1, arr2) # faster
 # as scalar:
 drop(crossprod(arr1, arr2))
 # do: ?drop
 
 # tcrossproduct() in R:
+arr1
+arr2
 tcrossprod(arr1, arr2) # faster
 # or:
 arr1 %*% t(arr2) # slower
@@ -156,7 +166,9 @@ t(arr1)
 arr1 <- 1:4
 arr1
 
-arr2 <- matrix(rep(1:4,4),ncol = 4,byrow = T)
+arr2 <- matrix(rep(1:4,4),
+               ncol = 4,
+               byrow = T)
 arr2
 
 arr1 * arr2 # element-wise
@@ -171,13 +183,15 @@ arr1 %*% t(arr2)
 tcrossprod(arr1, arr2)
 
 # Multiplying matrices
-arr1 <- matrix(rep(2,16),ncol = 4,byrow = T)
+arr1 <- matrix(rep(2,16),
+               ncol = 4,
+               byrow = T)
 
 # element-wise:
 arr1 * arr2
 
 # t(arr1) %*% arr2
-crossprod(arr1,arr2)
+crossprod(arr1, arr2)
 # and this does the same:
 arr1 %*% arr2
 
@@ -200,7 +214,7 @@ a %o% b
 outer(a,b,"*")
 
 ### D. Lists in R
-## ═══════════════════════════════════════════════════════
+## -------------------------------------------------------
 
 # We use lists a lot in R:
 list_1 <- list(num_vect_2, char_vect_2, log_vect_2) # this is a list
@@ -228,6 +242,7 @@ list_1[["words"]] # or even like this
 length(list_1$words) # 2 as expected
 
 list_1[["words"]][1] # digging even deeper
+list_1$words[2]
 
 list_1$new_elem <- c(TRUE, FALSE, FALSE, TRUE) # add new element
 
@@ -235,9 +250,10 @@ length(list_1) # now list has 4 elements
 list_1$new_elem <- NULL # but we can remove it easily
 
 new_vect <- unlist(list_1) # creating a vector from list
+new_vect
 
 ### E. Data Frames  
-## ═══════════════════════════════════════════════════════
+## -------------------------------------------------------
 
 # Introducing data frames in R
 

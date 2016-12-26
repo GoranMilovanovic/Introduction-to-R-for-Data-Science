@@ -1,21 +1,21 @@
 
 ## Introduction to R for Data Science
-## ══════════════════════════════════════════════════════════════════════════════════
+## ----------------------------------------------------------------------------------
 ## SESSION 06: EXPLORATORY DATA ANALYSIS (EDA)
-## ══════════════════════════════════════════════════════════════════════════════════
+## ----------------------------------------------------------------------------------
 ## Autumn 2016.
 ## Data Science Serbia @Startit Centre, Savska 5, Belgrade, Serbia
 
 ## Lecturers
-## ══════════════════════════════════════════════════════════════════════════════════
+## ----------------------------------------------------------------------------------
 # Goran S. Milovanović, Phd
 # Data Science Mentor @Springboard, Data Science Serbia
 # ing Branko Kovač, Data Scientist @Tradecore
 # Data Science Mentor @ Springboard, Data Science Serbia
-## ══════════════════════════════════════════════════════════════════════════════════
+## ----------------------------------------------------------------------------------
 
 ## SESSION 06: EXPLORATORY DATA ANALYSIS (EDA)
-## ══════════════════════════════════════════════════════════════════════════════════
+## ----------------------------------------------------------------------------------
 
 # clear all
 rm(list=ls())
@@ -32,7 +32,7 @@ data(mtcars)
 # https://stat.ethz.ch/R-manual/R-devel/library/datasets/html/mtcars.html
 
 ## Summarize Data Set
-## ═════════════════════════════════════════
+## -----------------------------------------
 summary(mtcars) # {base}
 glimpse(mtcars) # {dplyr}
 head(mtcars, 5) # {base}
@@ -46,7 +46,7 @@ summarise(cylinders,
           stdDev = sd(mpg))
 
 ### Descriptive Statistics
-## ═════════════════════════════════════════
+## -----------------------------------------
 ## Mean
 mean(mtcars$mpg)
 mtcars$mpg[10]<- NA
@@ -70,7 +70,7 @@ r
 median(mtcars$mpg)
 
 ### EDA plots
-## ═════════════════════════════════════════
+## -----------------------------------------
 # boxplot mtcars$mpg
 boxplot(mtcars$mpg,
         horizontal = TRUE, 
@@ -78,7 +78,7 @@ boxplot(mtcars$mpg,
         main = "Boxplot: MPG")
 
 ## NOTE: Boxplot "fences" and outlier detection
-## ═════════════════════════════════════════
+## -----------------------------------------
 # Boxplot in R recognizes as outliers those data points that are found beyond OUTTER fences
 # Source: http://www.itl.nist.gov/div898/handbook/prc/section1/prc16.htm
 # Q3 = 75 percentile, Q1 = 25 percentile
@@ -97,7 +97,7 @@ IQ
 # A point beyond an outer fence is considered an extreme outlier
 
 ## histogram: mtcars$mpg
-## ═════════════════════════════════════════
+## -----------------------------------------
 ## freq = T for frequencies
 hist(mtcars$mpg, 
      main="Histogram: MPG", 
@@ -139,7 +139,7 @@ class(myHist)
 class(myHist[[1]])
 
 ## Q-Q Plot
-## ═════════════════════════════════════════
+## -----------------------------------------
 # plot layout: 1 x 2
 par(mfcol = c(1,2))
 qqnorm(mtcars$mpg)
