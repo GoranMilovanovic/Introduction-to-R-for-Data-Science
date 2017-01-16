@@ -17,10 +17,6 @@
 ## SESSION 08: CORRELATION
 ## --------------------------------------------
 
-
-# clear
-rm(list=ls())
-
 ## Linear Correlation: Assumptions
 ## --------------------------------------------
 # To be discussed in greater detail during S10: Simple Linear Regression
@@ -132,7 +128,7 @@ sum(zSepalLength1 == zSepalLength) == length(zSepalLength)
 ## Correlation
 ## --------------------------------------------
 
-cor(iris[,c(1:4)])
+cor(iris[, c(1:4)])
 
 ## Correlation Matrix
 ## --------------------------------------------
@@ -161,9 +157,8 @@ cor1c
 ## Deletion: default
 ## --------------------------------------------
 
-cor1d <- cor(dSet, use = "everything") # all observations - error
+cor1d <- cor(dSet, use = "everything") # default
 cor1d
-
 
 ## Visualizing Correlation Matrices
 ## --------------------------------------------

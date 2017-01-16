@@ -81,7 +81,6 @@ system.time(
 
 # Another example how loops can be slow (loop vs vectorized function)
 iter <- 50000
-
 system.time(
   for (i in 1:iter) {
     vec[i] <- rnorm(n=1, mean=0, sd=1) # approach from previous example
@@ -124,18 +123,18 @@ repeat { # there is no condition...
 }
 
 # And there's something called 'switch' :)
-switch(2, "Data", "Science", "Dubai") # choose one option based on value
+switch(2, "Data", "Science", "Novi Sad") # choose one option based on value
 
 # More on switch:
 switchIndicator <- "Data"
 switchIndicator <- "Science"
-switchIndicator <- "Dubai"
+switchIndicator <- "NS"
 # rare situations where you do not need to enclose strings: ' ', or " "
 switch(switchIndicator,
        Data = {print(switchIndicator)},
        Science = {print(switchIndicator)
                     print(switchIndicator)},
-       Dubai = {print(nchar(switchIndicator))}
+       NS = {print(nchar(switchIndicator))}
 )
 
 # now:
@@ -148,7 +147,6 @@ switch(type,
        {print("Beyond C...")} # default choice
 )
 
-# Switch and if-else are similar, but switch is faster
 # Switch and if-else are similar, but switch is faster
 ix <- 2
 system.time(
@@ -215,7 +213,8 @@ h <- function() {
 }
 h()
 
-# Messing up argument names (never do this in nested functions unless you have to)
+# Messing up argument names 
+# (never do this in nested functions unless you have to)
 rm(x, h)
 x <- 1
 h <- function(x) {
@@ -232,7 +231,7 @@ h(x)
 # Two things that come handy: lapply and apply
 
 # Step 1: here's a list:
-list_1 <- list(c(1,2),
+list_1 <- list(c(1,2,3),
                c(4,5,6),
                c(7,8,9),
                c(10,11,12))
