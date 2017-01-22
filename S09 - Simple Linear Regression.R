@@ -114,25 +114,6 @@ coefsReg <- coefficients(reg)
 coefsReg
 slopeReg <- coefsReg[2]
 interceptReg <- coefsReg[1]
-# Plot the model
-plot(iris$Sepal.Length, iris$Petal.Length,
-     xlab='Sepal Length',ylab='Petal Length',
-     main="iris: Sep.Length predicts Pet.Length")
-abline(coefsReg, col='red')
-
-# Plot the model {ggplot2}
-# Predictor vs Criterion {ggplot2}
-ggplot(data = iris,
-       aes(x = Sepal.Length, y = Petal.Length)) +
-  geom_point(size = 1.5, colour = "black") +
-  geom_point(size = 1, colour = "white") +
-  geom_smooth(aes(colour = "red"),
-              method='lm',
-              size = .25) +
-  ggtitle("Sepal Length vs Petal Length") +
-  xlab("Sepal Length") + ylab("Petal Length") + 
-  theme_classic() +
-  theme(legend.position = "none")
 
 # Prediction from this model
 # watch the variable names in the new data.frame:
@@ -183,7 +164,7 @@ reg1 <- lm(Petal.Length ~ Sepal.Length, data=dSet)
 summary(reg1)
 # compare
 coefficients(reg1)[2] # beta from reg1
-lm.beta(reg) # standardized beta w. QuantPscy lm.beta from reg
+lm.beta(reg) # standardized beta w. QuantPsyc lm.beta from reg
 
 ## Linear Regression: Assumptions
 ## ═════════════════════════════════════════
@@ -195,7 +176,8 @@ lm.beta(reg) # standardized beta w. QuantPscy lm.beta from reg
 
 #### Test 1: Linearity assumption
 # Predictor vs Criterion {base}
-reg <- lm(iris$Petal.Length ~ iris$Sepal.Length, data = iris)
+reg <- lm(iris$Petal.Length ~ iris$Sepal.Length, 
+          data = iris)
 plot(iris$Sepal.Length, iris$Petal.Length,
      main = "Petal Length vs Sepal Length",
      xlab = "Sepal Length",

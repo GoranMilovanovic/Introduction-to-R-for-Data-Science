@@ -1,0 +1,507 @@
+# Introduction to R for Data Science
+### Session 09: Simple Linear Regression
+
+12/26/2016, Belgrade, Serbia
+
+Organized by: [Data Science Serbia](http//:www.datascience.rs) and [Startit](http://en.startit.rs)
+
+***
+
+## Lecturers
+
+
+![](img/GoranSMilovanovic.jpg)
+
+#### [Goran S. Milovanović](http://www.exactness.net), Phd  
+#### Data Science Mentor at [Springboard](https://www.springboard.com/workshops/data-science), [Data Science Serbia](http://www.datascience.rs)  
+![](img/BrankoKovac.jpg)  
+
+#### [ing Branko Kovač](https://rs.linkedin.com/in/kovacbranko)
+#### Data Scientist @Tradecore, Data Science Mentor at [Springboard](https://www.springboard.com/workshops/data-science), [Data Science Serbia](http://www.datascience.rs)
+
+***
+
+We now begin considering the mathematical modeling of data in R. The first - and arguably the simplest - statistical model that we will face is the *Simple Linear Regression Model*. In a typical simple linear regression setting, we have one continuous *predictor* -  also known as the *independent variable* - and one continuous *criterion* - a.k.a. the *dependent variable*. Both these are assumed to be unbounded, i.e. taking values across the whole domain of real numbers. *Continuity* here should be understood precisely as having measurements from an *interval* or *ratio scale*.
+
+Linear regression does not imply any causality; it is up to the user of the model to impose causal assumptions, i.e. which variable takes the role of the criterion and which variable is assigned as a predictor. It is not even necessary to impose any such assumptions in order to obtain a valid linear regression model, although it is very customary to have some hypothesized direction of causality in order to discuss prediction meaningfully.
+
+Like any other statistical model, linear regression rests upon some assumptions. We will discuss the following more thoroughly and learn how to assess their validity during this session:
+
+1. Linearity
+2. Constant variance == homoscedasticity
+3. Normal distribution of residuals (model errors),
+3. Independence of errors == no autocorrelation of residuals
+4. No significant outliers or influential cases
+5. Level of measurement: interval or ratio scale.
+
+***
+
+Start with a setup: load libraries + data set:
+
+``` {r message = F}
+### --- Clear, Libraries, Data Sets
+
+# clear all
+rm(list=ls())
+
+# libraries
+library(datasets)
+library(dplyr)
+library(Hmisc)
+library(QuantPsyc)
+library(ggplot2)
+library(car)
+library(ggplot2)
+
+# data
+data(iris)
+### Iris data set description:
+# https://stat.ethz.ch/R-manual/R-devel/library/iriss/html/iris.html
+```
+
+***
+
+We will be considering the following linear regression model: take `Sepal.Length` as predictor and `Petal.Length` as criterion from `iris`. We will see that this choice of variables, in spite of some linearity present in their relationship, does not really make a case for linear regression modeling. Namely, some of the assumptions of this simple model will be clearly violated. However, we want to use this example to demonstrate simple linear regression in R, and then introduce the correction of this model via *multiple linear regression* which we will introduce in *Session 10*. We begin by conducting a typical EDA of `Sepal.Length` and `Petal.Length`.
+
+### A. Exploratory Data Analysis
+
+``` {r echo = T}
+glimpse(iris)
+```
+
+``` {r echo = T}
+summary(iris)
+```
+
+``` {r echo = T}
+## EDA plots
+par(mfcol = c(2,2)) # plot layout: 2 x 2
+# boxplot iris$Sepal.Length
+boxplot(iris$Sepal.Length,
+        horizontal = TRUE, 
+        xlab="Sepal Length")
+# histogram: iris$Sepal.Length
+hist(iris$Sepal.Length, 
+     main="", 
+     xlab="Sepal.Length", 
+     prob=T)
+# overlay iris$Sepal.Length density function over the empirical distribution
+lines(density(iris$Sepal.Length),
+      lty="dashed", 
+      lwd=2.5, 
+      col="red")
+# boxplot iris$Petal.Length
+boxplot(iris$Petal.Length,
+        horizontal = TRUE, 
+        xlab="Petal Length")
+# histogram: iris$Petal.Length,
+hist(iris$Petal.Length,
+     main="", 
+     xlab="Petal Length", 
+     prob=T)
+# overlay iris$Petal.Length density function over the empirical distribution
+lines(density(iris$Petal.Length),
+      lty="dashed", 
+      lwd=2.5, 
+      col="red")
+# reset plot paramateres
+par(mfcol = c(1,1))
+```
+
+What can you say about the proabbility distribution of these two variables from the results of EDA? Notice the pronounced bimodality of `Petal.Length`; as you will observe soon, there is even more to it. Do `Sepal.Length` and `Petal.Length` correlate linearly?
+
+***
+
+### B. Linear Correlation vs. Assumption of Linearity
+
+``` {r echo = T}
+## Pearson correlation in R {base}
+cor1 <- cor(iris$Sepal.Length, iris$Petal.Length, 
+            method="pearson")
+cor1
+```
+
+With $R$ = .87 we hope to be able to say that there is a linear relationship, right? Time to learn something important about statistics: you can never rely on a conclusion that was reached by taking the values of the statistics *prima facie* while doing nothing else. Take a look at the scatter plot of these two variables:
+
+``` {r echo = T}
+# Let's test the assumption of linearity:
+ggplot(iris, aes(x = Sepal.Length, y = iris$Petal.Length)) +
+  geom_point(size = 1.5, color = 'black') +
+  geom_point(size = 1, color = 'white') +
+  geom_smooth(method = 'lm', size = .25, color = 'black', alpha = .25) +
+  ggtitle('Sepal Length vs Petal Length') +
+  theme_classic()
+
+```
+
+We have included the best fitting regression line in the scatter plot; does the relationship between the two variable really looks *linear*? Let's remind ourselves of what we have already discovered in Session 08 on correlations:
+
+``` {r echo = T}
+ggplot(data = iris, aes(x = Sepal.Length,
+                        y = Petal.Length,
+                        color = Species)
+       ) + 
+  geom_point(size = 1.5) +
+  geom_smooth(method = 'lm', size = .25, se = F) + 
+  ggtitle('Sepal Length vs Petal Length') + 
+  theme_classic()
+```
+
+Interesting: there seem to be *more than one* linear relationship in this scatter plot, i.e. one per each group from the `iris` data set. What do we do, except for concluding that the *assumption of linearity* has failed? We will introduce a fix in the next session, showing how a multiple regression model can account for situations like the present one; in the meantime, pretend like nothing has happened..
+
+By the way, is the $R$ coefficient of linear correlation statistically significant?
+
+``` {r echo = T}
+# Is Pearson's product-moment correlation coefficient significant?
+cor2 <- rcorr(iris$Sepal.Length, # {hmisc}
+              iris$Petal.Length, 
+              type="pearson")
+cor2$r # correlations
+```
+
+``` {r echo = T}
+cor2$r[1,2] # Ok, the one we're looking for
+```
+
+``` {r echo = T}
+cor2$P[1,2] # significant at
+```
+
+Well, $R$ is significant indeed. Most social science students would typically conclude that everything's superfine here... Don't be lazy: (a) do the EDA of your variables before modeling, (b) inspect the scatter plot in *smart ways* - if there are natural groupings expected in the data set, use colors or shapes to mark them. In spite of the high, statistically significant Pearson's correlation coefficient between `Sepal.Length` and `Petal.Length`, this relationship violates linearity, and a model more powerfull than simple linear regression is needed.
+
+However, let's pretend we've never seen this and start doing simple linear regression in R.
+
+***
+
+### C. Simple Linear Regression w. `lm()` in R
+
+In R we have the `lm()` function - short for *linear model* - to fit all different kinds of models in the scope of this model framework to the data:
+
+``` {r echo = T}
+### --- Linear Regression with lm()
+# Predicting: Petal Length from Sepal Length
+reg <- lm(Petal.Length ~ Sepal.Length, 
+          data=iris) 
+class(reg)
+```
+
+The `Petal.Length ~ Sepal.Length` is called a *formula*, and you should learn more about how formulas in R are syntactically composed. The simplest possible formula, like this one, simply informs R that we wish to model `Petal.Length` - standing to the left of `~` - by taking only `Sepal.Length` - standing to the right - as a predictor. For those who are already familiar with a multiple linear regression setting, doing `A ~ B + C` means calling for a linear model with `A` as a dependent variable and `B`, `C` as predictors. We will let these things complicate in the future, don't worry. The object `reg` stores the results of our attempt at a simple linear regression model, and has its own class of `lm`, as you can observe following the call to `class(reg)`.
+
+Let's inspect the result more thoroughly:
+
+``` {r echo = T}
+summary(reg)
+```
+
+The output provides: 
+
++ a call that has generated the linear model object `reg`;
++ a basic overview of descriptive statistics for model residuals;
++ a table of regression coefficients: there are only two for the simple linear regression model, namely the model intercept and the slope (i.e. the regression coefficient for the one and only predictor in the model), and the raw (not standardized) values of the predictors are reported in the `Estimate` column, accompanied by respective standard errors, t-test against zero, and the probabilities of commiting to a $Type I$ error in drawing conclusions from these t-tests;
++ Residual Standard Error;
++ Multiple R^2 and the Adjusted R^2 values;
++ The F-Statistic: ratio of variances computed from the *regression* and *residual SSEs*, with the respective number of degrees of freedom and its p-value. 
+
+To isolate the regression coefficients from the model:
+
+``` {r echo = T}
+coefsReg <- coefficients(reg)
+coefsReg
+```
+
+``` {r echo = T}
+slopeReg <- coefsReg[2]
+interceptReg <- coefsReg[1]
+```
+
+You can also work with the `summary()` of the `lm` class as an object:
+
+``` {r echo = T}
+sReg <- summary(reg)
+str(sReg)
+```
+
+For example:
+
+``` {r echo = T}
+sReg$r.squared
+```
+
+``` {r echo = T}
+sReg$fstatistic
+```
+
+``` {r echo = T}
+sReg$coefficients
+```
+
+``` {r echo = T}
+hist(sReg$residuals, 20, probability = T,
+     main = 'Residuals',
+     xlab = 'Residuals', ylab = 'Density',
+     col = "orange")
+densRegRes <- data.frame(x  = sReg$residuals,
+                         y = dnorm(sReg$residuals, 
+                                   mean(sReg$residuals), 
+                                   sd(sReg$residuals)))
+densRegRes <- densRegRes[order(densRegRes$x), ]
+lines(densRegRes,
+      lty = "dashed", 
+      lwd = 1, 
+      col = "blue")
+```
+
+Interesting: from the last histogram, would you say that the residuals in this linear model are *normally distributed*? We will get back to this question soon.
+
+***
+
+### D. Predicting from the Simple Linear Model
+
+In order to obtain predictions for new data from the fitted simple linear regression model in R, we use the generic `predict()` function. In the simplest possible prediction setting, this function's first argument is an object of the `lm` class, while the second argument, `newdata`, provides a `data.frame` in which to look for the new values of the model *independent* variable.
+
+We first create the new data set:
+
+``` {r echo= T}
+# Prediction from this model
+# watch the variable names in the new data.frame:
+newSLength <- data.frame(Sepal.Length = rnorm(100,
+                                              mean(iris$Sepal.Length), 
+                                              sd(iris$Sepal.Length)))
+head(newSLength)
+```
+
+It is a `data.frame` with only one column, which must have the same name as the independent variable in the original `data.frame` that was used to fit the model: `Sepal.Length`. We have generated the new `Sepal.Length` data points by taking 100 random numbers from a Gaussian with the same mean and variance as the original variable. Then we call `predict()`:
+
+``` {r echo = T}
+predictPLength <- predict(reg, newSLength)
+class(predictPLength)
+```
+
+``` {r echo = T}
+head(predictPLength, 10)
+```
+
+***
+
+### E. Confidence Intervals and Standardized Regression Coefficients
+
+To obtain confidence intervals for regression coefficients:
+
+``` {r echo = T}
+# Confidence Intervals: 95%
+confint(reg, level=.95)
+```
+
+``` {r echo = T}
+# Confidence Intervals: 959%
+confint(reg, level=.99)
+```
+
+``` {r echo = T}
+# 95% CI for slope only
+confint(reg, "Sepal.Length", level=.95)
+```
+
+``` {r echo = T}
+# 99% CI for intercept only
+confint(reg, "(Intercept)", level=.99)
+```
+
+The `lm` object *does not* provide the values of the standardized regression coefficients. You can obtain them from a call to `lm.beta()` from the `{QuantPsych}' package:
+
+``` {r echo = T}
+### --- Standardized regression coefficients {QuantPsych}
+lm.beta(reg)
+```
+
+However, you can also obtain them in few lines of R code after being reminided that the standardized regression coefficients are exactly the coefficients that would obtain following the linear regression modeling of the standardized variables...
+
+``` {r echo = T}
+# Reminder: standardized regression coefficients are...
+# What you would obtain upon performing linear regression over standardized variables
+# z-score in R
+zSLength <- scale(iris$Sepal.Length, center = T, scale = T) # computes z-score
+zPLength <- scale(iris$Petal.Length, center = T, scale = T) # again; ?scale
+# new dSet w. standardized variables
+dSet <- data.frame(Sepal.Length <- zSLength,
+                   Petal.Length <- zPLength)
+# Linear Regression w. lm() over standardized variables
+reg1 <- lm(Petal.Length ~ Sepal.Length, data=dSet) 
+summary(reg1)
+```
+
+To make sure you're on the right track:
+
+``` {r echo = T}
+# compare
+coefficients(reg1)[2] # beta from reg1
+```
+
+``` {r echo = t}
+lm.beta(reg) # standardized beta w. QuantPsyc lm.beta from reg
+```
+
+***
+
+### F. Linear Regression Diagnostics: Testing the Model Assumptions 
+
+We will spend some time in inspecting the validity of this linear regression model as a whole. Usually termed *model diagnostics*, the following procedures are carried over to ensure that the model assumptions hold. Unfortunatelly, even for a model as simple as a simple linear regression, testing for model assumptions tends to get nasty all the way down... Most of the criteria cannot be judged by simply assessing the values of the respective statistics, and one should generally consider the model diagnostics step as a mini-study on its own - and the one going well beyond the time spent to reach the conclusions of the model performance on the data set, because none of one's conclusions on the data set truly hold from a model whose assumptions are not met. Sadly, this is a fact that is overlooked too often in contemporary statistics practice.
+
+#### The Linearity Assumption
+
+We have already tested for this:
+
+``` {r echo = t}
+#### Test 1: Linearity assumption
+# Predictor vs Criterion {ggplot2}
+ggplot(data = iris, aes(x = Sepal.Length,
+                        y = Petal.Length,
+                        color = Species)
+       ) + 
+  geom_point(size = 1.5) +
+  geom_smooth(method = 'lm', size = .25, se = F) + 
+  ggtitle('Sepal Length vs Petal Length') + 
+  theme_classic()
+```
+
+And the assumption obviously fails.
+
+#### The Normality of Residuals
+
+We have already played with this too, in a different way only:
+
+``` {r echo = t}
+#### Test 2: Normality of Residuals
+resStReg <- rstandard(reg) # get *standardized* residuals from reg
+qqnorm(resStReg)
+qqline(resStReg, col="red")
+```
+
+Let' see what does the Shapiro-Wilk tells:
+
+``` {r echo = T}
+shapiro.test(reg$residuals)
+```
+
+- and it seems like this assumption is met.
+
+#### Constant variance (or Homoscedasticity)
+
+The model error (i.e. variance, computed from the model residuals) should be constant on all levels of the criterion:
+
+``` {r echo = T}
+# Predicted vs. residuals {ggplot2}
+predReg <- predict(reg) # get predictions from reg
+resReg <- residuals(reg) # get residuals from reg
+# resStReg <- rstandard(reg) # get residuals from reg
+plotFrame <- data.frame(predicted = predReg,
+                        residual = resReg)
+# plot w. {ggplot2}
+ggplot(data = plotFrame,
+       aes(x = predicted, y = residual)) +
+  geom_point(size = 1.5, colour = "black") +
+  geom_point(size = 1, colour = "white") +
+  geom_smooth(aes(colour = "blue"),
+              method='lm',
+              size = .25,
+              alpha = .25) + 
+  ggtitle("Predicted vs Residual Lengths") + 
+  xlab("Predicted Lengths") + ylab("Residual") + 
+  theme_classic() +
+  theme(legend.position = "none")
+```
+
+This can be confusing if one does not recall that we have fitted the model by having only one sample of observations at hand. Imagine drawing a sample of `Sepal.Length` and `Petal.Length` values repeatedly and trying to predict one from another from a previously fitted simple linear regression model. It is quite probable that we would get at observing varying residuals (model errors) for different draws of `Petal.Length` observed on the same level `Sepal.Length` upon prediction. However, the distribution of these residuals, more precisely: *its variance*, must be constant across all possible levels of `Petal.Length`. That is why we choose to inspect the scatter plot of predicted `Petal.Length` values vs. their respective residuals. Essentially, one should not be able to observe any regularity in this plot; if it turns out that any pattern emerges, i.e. that it is possible to predict the residuals from the levels of criterion - the simple linear model should abandoned.
+
+Our simple linear regression model obviously suffers from *heteroscedasticity*, or a lack of constant variance accross the measurements. The cause of the heteroscedasticity in this case is related to the existence of clusters of related observations, determined by the type of flower in the `iris` data set. 
+
+#### No outliers or influential cases
+
+There are a plenty of proposed procedures to detect influential cases in simple linear regression. The `influence.mesures()` function will return most of the interesting statistics in this respect:
+
+``` {r echo = T}
+#### Test 3: Outliers and Influential Cases
+# Detect influential cases w. influence.measures()
+infMeas <- influence.measures(reg)
+class(infMeas)
+```
+
+``` {r echo = T}
+str(infMeas)
+```
+
+What you need to extract from `infMeans` now is the `$infmat` field:
+
+``` {r echo = T}
+# as data.frame
+infReg <- as.data.frame(influence.measures(reg)$infmat)
+head(infReg)
+```
+
+Sometimes, people focus on *Cook's distances*: they are used to detect the influential cases by inspecting the effect of removal of each data point on the linear model:
+
+``` {r echo = T}
+## Cook's Distance: Cook and Weisberg (1982):
+# values greater than 1 are troublesome
+wCook <- which(infReg$cook.d >1)
+wCook # we seem to be fine here
+```
+
+The *leverage* tells us how infuential a data point is by measuring how *unusual* or *atypical* is the combination of predictor values - in case of multiple linear regression - for that observation; in case of simple linear regression, try to think of it as simply a measure of how *"lonely"* a particular point is found on the predictor scale.  
+
+``` {r echo = T}
+# Leverage: hat values
+# Average Leverage = (k+1)/n, k - num. of predictors, n - num. observations
+# Also termed: hat values, range: 0 - 1
+# see: https://en.wikipedia.org/wiki/Leverage_%28statistics%29
+# Various criteria (twice the average leverage, three times the average leverage...)
+# Say, twice the leverage:
+k <- 1 # number of predictors
+n <- dim(iris)[1] # number of observations
+wLev <- which(infReg$hat > 2*((k+1)/n))
+wLev # hm...
+```
+
+Finally, to inspect the influential cases visually, we can produce the Influence Plot, combining information on standardized residuals, leverage, and Cook's distances:
+
+``` {r echo = T}
+## Influence plot
+plotFrame <- data.frame(residual = resStReg,
+                        leverage = infReg$hat,
+                        cookD = infReg$cook.d)
+ggplot(plotFrame,
+       aes(y = residual,
+           x = leverage)) +
+  geom_point(size = plotFrame$cookD*100, shape = 1, color = 'blue') +
+  ggtitle("Influence Plot\nSize of the circle corresponds to Cook's distance") +
+  theme(plot.title = element_text(size=8, face="bold")) +
+  ylab("Standardized Residual") + xlab("Leverage") + 
+  theme_classic()
+
+```
+
+#### No autocorrelation in residuals
+
+The final twist is related to the assumption that the model errors are not *autocorrelated*. The autocorrelation of a variable exists when its previously measured values are correlated with its subsequent measurements. The autocorrelation can be computed for different values of the *lag*, defining how far apart are the "present" and "past" observations of a variable assumed to be. For example, given $X = x_1, x_2, ..., x_n$, one can compute the autcorrelation at lag of 1 by correlating $X_i$ with $X_{i-1}$, or at lag of 2 by correlating  $X_i$ with $X_{i-2}$, etc.
+
+In the setting of simple linear regression, the autocorrelation test that is most frequently met is the *Durbin-Watson statistic*: 
+
+``` {r echo = T}
+#### Test 4: Durbin-Watson Test for auto-correlation of residuals
+durbinWatsonTest(reg) # D-W Statistic < 1 --> problematic {car}
+```
+
+The Durbin-Watson statistic will have a value of **2** if no autocorrelation at all is present in the model residuals. It tests the null hypothesis that the autocorrelation is zero, so that its statistical significance ($p < .05$, conventionally) indicates that the autocorrelation in residuals is present.
+
+***
+
+## Readings for Session 10:
+
+*Session 10 will introduce the Multiple Linear Regression Model*. Again, you can rely on David M. Lane's online tutorial to refresh your math:
+
++ [Regression, by David M. Lane](http://onlinestatbook.com/2/regression/regression.html)
+
+
+***
+
+#### [Data Science Serbia](http://www.datascience.rs) 2016.
