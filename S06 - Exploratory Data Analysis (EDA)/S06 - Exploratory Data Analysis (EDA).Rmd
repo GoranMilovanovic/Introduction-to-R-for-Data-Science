@@ -10,11 +10,11 @@ Organized by: [Data Science Serbia](http//:www.datascience.rs) and [Startit](htt
 ## Lecturers
 
 
-![](img/GoranSMilovanovic.jpg)
+![](../img/GoranSMilovanovic.jpg)
 
 #### [Goran S. Milovanović](http://www.exactness.net), Phd  
 #### Data Science Mentor at [Springboard](https://www.springboard.com/workshops/data-science), [Data Science Serbia](http://www.datascience.rs)  
-![](img/BrankoKovac.jpg)  
+![](../img/BrankoKovac.jpg)  
 
 #### [ing Branko Kovač](https://rs.linkedin.com/in/kovacbranko)
 #### Data Scientist @Tradecore, Data Science Mentor at [Springboard](https://www.springboard.com/workshops/data-science), [Data Science Serbia](http://www.datascience.rs)
@@ -473,3 +473,5 @@ An exercise on simulating the behavior of *sums of Independently and Identically
 ***
 
 #### [Data Science Serbia](http://www.datascience.rs) 2016.
+
+![](../img/DataScienceSerbiaLogo.png)
