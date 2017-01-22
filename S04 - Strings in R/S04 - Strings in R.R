@@ -51,6 +51,9 @@ writeLines(string_1)
 # Escaping escape character
 writeLines("\\") # nice
 
+stringExample <- "Starit Centar Novi Sad"
+grepl("^S.+d$", stringExample)
+
 # Length of strings
 length(string_1) # of course
 nchar(string_1) # base function
@@ -60,7 +63,6 @@ string_3 <- c(string_1, string_2) # a character vector of length == 2
 string_3 <- paste(string_1, string_2, sep = ", ") # length == 1, base function
 writeLines(string_3)
 
-# 
 strD <- c("First", "Second", "Third")
 # both paste {base} and str_c {stringr} are vectorized
 paste("Prefix-", strD, sep = "-")
@@ -68,12 +70,13 @@ str_c("Prefix-", strD, sep = "-") # {stringr}
 
 # Splitting strings in R
 # with strsplit {base}
-string_1 <- "The quick brown fox jumps over the lazy dog";
-splitA <- strsplit(string_1, " ") # is.list(splitA) == T
+string_1 <- "The quick brown fox jumps over the lazy dog"
+splitA <- strsplit(string_1, split = " ", fixed = T) # is.list(splitA) == T
 splitA <- unlist(strsplit(string_1, " "))
 
 # "The quick brown" from "The quick brown fox jumps over the lazy dog"
-splitA <- paste(unlist(strsplit(string_1," "))[1:3], collapse = " ")
+splitA <- paste(unlist(strsplit(string_1," ", fixed=T))[1:3], 
+                collapse = " ")
 string_1
 splitA <- strsplit(string_1," ", fixed = T) # fixed=T says: match the split argument 
 # exactly, otherwise, split is an regular
@@ -128,11 +131,11 @@ gsub(" ", "", string_1, fixed = T) # (!(fixed==T)), the first (pattern) argument
 
 # replacing, in general:
 string_1 <- "The quick brown fox jumps over the lazy dog The quick brown"
-gsub("The quick brown", "The slow red", string_1, fixed=T)
+gsub("The quick brown", "The slow red", string_1, fixed = T)
 
 # Searching for something in a string {stringr}
 str_detect(string_1, "The quick brown") # T or F
-str_locate(string_1, "The quick brown")[[1]] # first match
+str_locate(string_1, "The quick brown")
 str_locate_all(string_1, "The quick brown")[[1]] # all matches
 # term frequency, as we know, is very important in text-mining:
 term1 <- str_locate_all(string_1, "The quick brown")[[1]] # all matches for term1 

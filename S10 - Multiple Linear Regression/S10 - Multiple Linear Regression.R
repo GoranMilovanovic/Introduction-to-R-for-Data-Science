@@ -1,7 +1,7 @@
 
 ## Introduction to R for Data Science
 ## -----------------------------------------------------------------------------------
-## SESSION 09: SIMPLE LINEAR REGRESSION
+## SESSION 10: MULTIPLE LINEAR REGRESSION
 ## -----------------------------------------------------------------------------------
 ## Autumn/Winter 2016.
 ## Data Science Serbia @Startit Centre, Savska 5, Belgrade, Serbia
