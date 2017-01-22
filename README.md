@@ -43,3 +43,6 @@ Organized by [Data Science Serbia](www.datascience.rs) + [Startit](www.en.starti
 
 ![Startit, Savska 5, Belgrade :: May 2016](/img/IntroR-DubaiWorkshop-Media Rotana-2.jpg)
 
+------
+![Data Science Serbia](/img/DataScienceSerbiaLogo.png)
+
