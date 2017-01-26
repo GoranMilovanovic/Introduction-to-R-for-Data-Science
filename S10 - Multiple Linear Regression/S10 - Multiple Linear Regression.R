@@ -144,7 +144,8 @@ tidy(reg) # The regression coefficents (!): figure out what has happened!
 ### another way to do dummy coding
 rm(iris); data(iris) # ...just to fix the order of Species back to default
 levels(iris$Species)
-contrasts(iris$Species) = contr.treatment(3, base = 1)
+contr.treatment(3, base = 1)
+contrasts(iris$Species) = contr.treatment(3, base = 3)
 contrasts(iris$Species) # this probably what you remember from your stats class...
 iris$Species <- factor(iris$Species, 
                        levels = c ("virginica","versicolor","setosa"))
@@ -152,10 +153,12 @@ levels(iris$Species)
 contrasts(iris$Species) = contr.treatment(3, base = 1)
 # baseline is now: virginica
 contrasts(iris$Species) # consider carefully what you need to do
+levels(iris$Species)
 
 ### Petal.Length ~ Species (Dummy Coding) + Sepal.Length 
 rm(iris); data(iris) # ...just to fix the order of Species back to default
-reg <- lm(Petal.Length ~ Species + Sepal.Length, data=iris)
+reg <- lm(Petal.Length ~ Species + Sepal.Length, 
+          data=iris)
 # BTW: since is.factor(iris$Species)==T, R does the dummy coding in lm() for you
 regSum <- summary(reg)
 regSum$r.squared
@@ -231,7 +234,9 @@ confint(stacklossModel, level=.99) # 99% CI
 confint(stacklossModel, "Acid.Conc.", level=.95)
 
 # default regression plots in R
+par(mfcol=c(2,2))
 plot(stacklossModel)
+par(mfcol=c(1,1))
 
 # multicolinearity
 # John Fox's {car} package:

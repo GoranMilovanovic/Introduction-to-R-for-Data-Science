@@ -43,36 +43,60 @@ head(example_1, 10)
 example_2 <- hflights[c("DepTime", "ArrTime", "FlightNum")]
 head(example_2, 10)
 
-example_3 <- aggregate(Diverted ~ DayOfWeek, data = hflights, FUN = sum)
+example_3 <- aggregate(Diverted ~ DayOfWeek, 
+                       data = hflights, 
+                       FUN = sum)
 head(example_3, 10)
 
+### --- Introducing {dplyr}
+
 # the way of {dplyr}:
-example_1 <- filter(hflights, Month == 1, DayofMonth == 1)
+example_1 <- filter(hflights, 
+                    Month == 1, 
+                    DayofMonth == 1)
 head(example_1, 20)
 
-example_2 <- select(hflights, DepTime, ArrTime, FlightNum)
+example_2 <- select(hflights, 
+                    DepTime, 
+                    ArrTime, 
+                    FlightNum)
 head(example_2, 20)
 
-example_3 <- summarise(group_by(hflights, DayOfWeek), sum(Diverted))
+example_3 <- summarise(group_by(hflights, 
+                                DayOfWeek), 
+                       sum(Diverted))
 head(example_3, 20)
 
-# dplyr::glimpse() is great replacement for str()
+# dplyr::glimpse() is just a replacement for str()
 glimpse(hflights)
 
-# Select following columns: from 'Year' to 'DayofMonth', all which have 'Taxi' in
-# its name and all which names end with 'Delay'.
-head(select(hflights, Year:DayofMonth, contains("Taxi"), ends_with("Delay")))
+# Select the following columns: from 'Year' to 'DayofMonth'
+# + all which have 'Taxi' in their name and 
+# + all which names end with 'Delay'.
+head(select(hflights, 
+            Year:DayofMonth, 
+            contains("Taxi"), 
+            ends_with("Delay")
+            )
+     )
 
-# If you want to subset data by some criteria, you're going to use filter(). It is
-# easy to use - just give it your criteria. NOTE: Using '&' is the same as using ','
+# If you want to subset data by some criteria, you're going to use filter(). 
+# It is easy to use - just give it your criteria. 
+# NOTE: Using '&' is the same as using ','
 # and it means AND; if you want to apply OR condition, use '|'.
-head(filter(hflights, (UniqueCarrier=="AA" | UniqueCarrier=="UA"), Month == 5))
+head(
+  filter(hflights, (UniqueCarrier=="AA" | UniqueCarrier=="UA"), Month == 5)
+  )
 
-# Function nesting to select only some columns from dataset and use filter on it?
-result <- filter(select(hflights, UniqueCarrier, DepDelay), DepDelay > 60)
+# Function nesting to select only some columns from dataset 
+# and use filter on it?
+result <- filter(
+  select(hflights, UniqueCarrier, DepDelay), 
+                 DepDelay > 60
+  )
 head(result, 20)
 
-# NOTE: The beatiful pipe operator - %>% - originates not from {dplyr}, 
+# NOTE: The pipe operator - %>% - originates not from {dplyr}, 
 # but from another important R package, namely: {magrittr}.
 result <- select(hflights, UniqueCarrier, DepDelay) %>%
   filter(DepDelay > 60)
@@ -82,7 +106,9 @@ head(result, 20)
 # see how to do it using base::order() and dplyr::arrange().
 
 # {base}
-head(hflights[order(hflights$DepDelay), c("UniqueCarrier", "DepDelay")]) 
+head(
+  hflights[order(hflights$DepDelay), c("UniqueCarrier", "DepDelay")]
+  ) 
 
 # {dplyr} with arrange()
 hflights %>%
@@ -97,38 +123,42 @@ hflights %>% filter(Month > 5, Month < 10) %>%
   summarise(tot_cancelled = sum(Cancelled)) %>%
   head()
 
-# what the group_by() function does?
+# what does the group_by() function do?
 groupedHflights <- 
   hflights %>% group_by(Origin)
 groupedHflights
 
 # summarise()
-summarise(groupedHflights, meanTaxiOut = mean(TaxiOut))
+summarise(groupedHflights, 
+          meanTaxiOut = mean(TaxiOut))
 
-# This is how we can calculate percentage of cancelled and diverted flights from 
-# Houston by destination airport:
+# This is how we can calculate percentage of cancelled 
+# and diverted flights from  Houston by destination airport:
 hflights %>%
   group_by(Dest) %>%
   summarise_each(funs(mean), Cancelled, Diverted)
 
-# n() is nifty little function which can be called only inside other dplyr functions.
+# n() is nifty little function which can be called only 
+# inside other dplyr functions; e.g.
 # Counting the number of flights by airport and month:
 hflights %>%
   group_by(Month, Dest) %>%
   summarise(flight_count = n()) %>%
   arrange(desc(flight_count))
 
+# {dplyr} tally():
 hflights %>%
   group_by(Month, Dest) %>%
   tally(sort = T)
 
-# n_distinct() does similar thing returning number of unique values.
+# n_distinct() returns the number of unique values:
 hflights %>%
   group_by(Dest) %>%
-  summarise(flight_count = n(), plane_count = n_distinct(UniqueCarrier))
+  summarise(flight_count = n(), 
+            plane_count = n_distinct(UniqueCarrier))
 
-# One more 'n' function is top_n(). It's clear that it gives top n number of values
-# where we decide what that number is.
+# One more 'n' function is top_n(). It's clear that it gives top n 
+# number of values where we decide what that number is:
 hflights %>%
   select(Month, DayofMonth, DepDelay) %>%
   group_by(Month) %>%
@@ -151,12 +181,12 @@ x <- coalesce(x, y)
 x
 
 typeof(hflights$TaxiIn)
-hflights$TaxiIn <- coalesce(hflights$TaxiIn, 0L)
+hflights$TaxiIn <- coalesce(hflights$TaxiIn, 0L) # - N.B. 'double' not 'integer'
 
 # joining with {dplyr}
-# Imagine that you want to have full carrier name instead of abbreviation in your
-# data.frame. However, full names are stored in another data frame. It's easy to
-# solve that problem by joining:
+# Imagine that you want to have full carrier name instead of abbreviation 
+# in your data.frame. However, full names are stored in another data frame. 
+# It's easy to solve that problem by joining:
 
 # Manually created dataset with carrier names of interest
 carier_names <- data.frame(carrier_abb = as.character(flights_with_km$UniqueCarrier), 
@@ -175,7 +205,7 @@ flights_with_km <- left_join(flights_with_km, carier_names,
                              by = c("UniqueCarrier" = "carrier_abb"))
 flights_with_km
 
-# Introducing {tidyr}
+### --- Introducing {tidyr}
 
 hflights %>% 
   select(Year, Month, DayofMonth) %>% head()
@@ -186,6 +216,8 @@ hflights %>%
 hflightsUnited <- hflights %>% unite(col = date, 
                                      Year, Month, DayofMonth, 
                                      sep = "/")
+head(hflightsUnited)
+
 # let's drop the original variables from the new data set:
 hflightsUnited$Year <- NULL
 hflightsUnited$Month <- NULL
@@ -194,6 +226,7 @@ hflightsUnited$DayOfWeek <- NULL
 head(hflightsUnited)
 
 # But if we ever need year, month and day data again separately...
+# {tidyr} separate() - the inverse of unite()
 hflightsSeparated <- 
   hflightsUnited %>% separate(date, 
                               c("Year", "Month", "DayofMonth"), 
@@ -216,7 +249,8 @@ mon_fli_carr <- hflights %>%
 colnames(mon_fli_carr) <- c("Dest", month.name)
 head(mon_fli_carr)
 
-# Again, note the usage of unquoted column names in {tidyr}
+# Again, note the usage of unquoted column names in
+# {tidyr} gather(), which is the inverse of spread():
 mon_fli_carr <- 
   mon_fli_carr %>% gather(key = Month, 
                           value = n, 
