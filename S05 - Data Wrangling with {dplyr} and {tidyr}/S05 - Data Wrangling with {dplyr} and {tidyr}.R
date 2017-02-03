@@ -29,8 +29,8 @@ library(hflights)
 data("hflights")
 
 # learn about hflights:
-data("hflights")
 ?hflights
+dim(hflights)
 str(hflights)
 summary(hflights)
 colnames(hflights)
@@ -46,7 +46,7 @@ head(example_2, 10)
 example_3 <- aggregate(Diverted ~ DayOfWeek, 
                        data = hflights, 
                        FUN = sum)
-head(example_3, 10)
+example_3
 
 ### --- Introducing {dplyr}
 
@@ -64,8 +64,9 @@ head(example_2, 20)
 
 example_3 <- summarise(group_by(hflights, 
                                 DayOfWeek), 
-                       sum(Diverted))
-head(example_3, 20)
+                       divSum = sum(Diverted)
+                       )
+example_3
 
 # dplyr::glimpse() is just a replacement for str()
 glimpse(hflights)
@@ -85,7 +86,9 @@ head(select(hflights,
 # NOTE: Using '&' is the same as using ','
 # and it means AND; if you want to apply OR condition, use '|'.
 head(
-  filter(hflights, (UniqueCarrier=="AA" | UniqueCarrier=="UA"), Month == 5)
+  filter(hflights, 
+         (UniqueCarrier=="AA" | UniqueCarrier=="UA"), 
+         Month == 5)
   )
 
 # Function nesting to select only some columns from dataset 
@@ -98,9 +101,12 @@ head(result, 20)
 
 # NOTE: The pipe operator - %>% - originates not from {dplyr}, 
 # but from another important R package, namely: {magrittr}.
-result <- select(hflights, UniqueCarrier, DepDelay) %>%
+
+result <- select(hflights, 
+                 UniqueCarrier, DepDelay) %>%
   filter(DepDelay > 60)
 head(result, 20)
+
 
 # Often we want to sort data by some criteria. Let's
 # see how to do it using base::order() and dplyr::arrange().
@@ -117,7 +123,8 @@ hflights %>%
   head()
 
 # summarise() 
-hflights %>% filter(Month > 5, Month < 10) %>%
+hflights %>% 
+  filter(Month > 5, Month < 10) %>%
   select(DayOfWeek, Cancelled) %>%
   group_by(DayOfWeek) %>%
   summarise(tot_cancelled = sum(Cancelled)) %>%
@@ -129,11 +136,12 @@ groupedHflights <-
 groupedHflights
 
 # summarise()
-summarise(groupedHflights, 
-          meanTaxiOut = mean(TaxiOut))
+summarise(groupedHflights,
+          meanTaxiOut = mean(TaxiOut, na.rm = T))
 
 # This is how we can calculate percentage of cancelled 
 # and diverted flights from  Houston by destination airport:
+# N.B Not percent!
 hflights %>%
   group_by(Dest) %>%
   summarise_each(funs(mean), Cancelled, Diverted)
@@ -181,7 +189,8 @@ x <- coalesce(x, y)
 x
 
 typeof(hflights$TaxiIn)
-hflights$TaxiIn <- coalesce(hflights$TaxiIn, 0L) # - N.B. 'double' not 'integer'
+# - N.B. 'double' not 'integer'
+hflights$TaxiIn <- coalesce(hflights$TaxiIn, 0L)
 
 # joining with {dplyr}
 # Imagine that you want to have full carrier name instead of abbreviation 
@@ -201,7 +210,8 @@ carier_names <- data.frame(carrier_abb = as.character(flights_with_km$UniqueCarr
                            stringsAsFactors = F)
 
 # join w. {dplyr}:
-flights_with_km <- left_join(flights_with_km, carier_names, 
+flights_with_km <- left_join(flights_with_km, 
+                             carier_names, 
                              by = c("UniqueCarrier" = "carrier_abb"))
 flights_with_km
 

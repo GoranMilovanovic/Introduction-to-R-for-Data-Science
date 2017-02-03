@@ -204,7 +204,7 @@ rangeMPG
 
 ### C. Boxplots: the hunt for outliers
 
-There is a function (like one couldn't say, right) in R to produce the boxplot of a variable:
+To produce the boxplot of a variable:
 
 ``` {r echo = T}
 # boxplot mtcars$mpg
@@ -222,7 +222,7 @@ Wow. Now to interpret this? First, let's learn how to produce more complicated b
 boxplot(mpg~cyl,
         data = mtcars,
         horizontal = F, 
-        xlab="MPG",
+        xlab="Cyl",
         main = "Boxplot: MPG",
         col = "deepskyblue")
 ```
