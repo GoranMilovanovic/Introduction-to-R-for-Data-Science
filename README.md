@@ -33,15 +33,6 @@ Organized by [Data Science Serbia](www.datascience.rs) + [Startit](www.en.starti
 
 ![Startit, Savska 5, Belgrade :: May 2016](/img/IntroR-Startit-3.jpg)
 
-------
-
-**Photo 2A. Introduction to R for Data Science** :: Media Rotana, Dubai, w. Persontyle and Everati, September 2016.
-
-![Startit, Savska 5, Belgrade :: May 2016](/img/IntroR-DubaiWorkshop-Media Rotana-1.jpg)
-
-**Photo 2B. Introduction to R for Data Science** :: Media Rotana, Dubai, w. Persontyle and Everati, September 2016.
-
-![Startit, Savska 5, Belgrade :: May 2016](/img/IntroR-DubaiWorkshop-Media Rotana-2.jpg)
 
 ------
 ![Data Science Serbia](/img/DataScienceSerbiaLogo.png)
