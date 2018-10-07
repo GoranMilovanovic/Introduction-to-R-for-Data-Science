@@ -27,56 +27,36 @@ Organized by: [Dr Goran S. Milovanović](http//:www.exactness.net) and [Startit]
 
 ![](../img/GoranSMilovanovic.jpg)
 
+
 [Goran S. Milovanović](http://www.exactness.net), Phd
-- Owner, [DataKolektiv](https://www.linkedin.com/company/18515547)
-- Data Scientist for [Wikidata](https://www.wikidata.org) at [WMDE](https://wikimedia.de/)
-- Data Science Mentor at [Springboard](https://www.springboard.com/workshops/data-science)
+
+Owner, [DataKolektiv](https://www.linkedin.com/company/18515547); Data Scientist for [Wikidata](https://www.wikidata.org) at [WMDE](https://wikimedia.de/); Data Science Mentor at [Springboard](https://www.springboard.com/workshops/data-science)
 
 ***
 
 ### A. Installing R and RStudio
 
-**Windows 7/8/10:**
+**Windows:**
 
-1. Download the binary setup file for R from the following [link](https://cran.r-project.org/bin/windows/base/R-3.3.2-win.exe)
-
+1. Download the binary setup file for R from the following link: https://cran.r-project.org/bin/windows/base/
 2. Open the downloaded file and install R by following installation instructions.
+3. Download the appropriate binary setup (see section: Installers for Supported Platforms) file for RStudio from the 4. following link: 	https://www.rstudio.com/products/rstudio/download/
+5. Open the downloaded file and install RStudio by following installation instructions.
+6. Find RStudio shortcut in Start Menu and open RStudio by clicking on it.
 
-3. Download the binary setup file for RStudio from the following [link](https://download1.rstudio.org/RStudio-1.0.44.exe)
-
-4. Open the downloaded file and install RStudio by following installation instructions.
-
-5. Find RStudio shortcut in Start Menu and open RStudio by clicking on it.
 
 **Apple OS X:** 
 
-1. Check OS X version: Choose “About This Mac” option from the Apple menu; the version number appears below the name.
-
-2. Download the binary setup file for R from the following link: 	
-
->>###### **for OS X 10.9 and newer, [this link](https://cran.r-project.org/bin/macosx/R-3.3.2.pkg)**, or  
->>###### **for OS X 10.6 – OS X 10.8, [this link](https://cran.r-project.org/bin/macosx/R-3.2.1-snowleopard.pkg)**
-
+1. Check OS X version: Choose "About This Mac" option from the Apple menu; the version number appears below the name.
+2. Download the appropriate binary setup file for R from the following link: 	https://cran.r-project.org/bin/macosx/
 3. Open the downloaded file and install R by following installation instructions.
-
-4. Download the binary setup file for RStudio from the following [link](https://download1.rstudio.org/RStudio-1.0.44.dmg)
-
+4. Download the appropriate binary setup (see section: Installers for Supported Platforms) file for RStudio from the following link:  https://www.rstudio.com/products/rstudio/download/
 5. Open the downloaded file and install RStudio by dragging the icon to Applications folder.
-
 6. Find RStudio icon in Applications folder and open RStudio by clicking on it.
 
-**Linux Ubuntu 16.04 Xenial Xerus**
+**Linux Ubuntu >> 16.04 Xenial Xerus**
 
-1. To install R on Ubuntu 16.04 Xenial Xerus, follow the instructions [here](https://www.r-bloggers.com/how-to-install-r-on-linux-ubuntu-16-04-xenial-xerus/)
-
-2. To install RStudio, visit [Download RStudio](https://www.rstudio.com/products/rstudio/download/) pages, pick the approprite (32/64 bit) version, download it, install it using any package manager; or,
-
-3. using [gdebi](https://apps.ubuntu.com/cat/applications/precise/gdebi/), open Terminal and type (N.B. 64 bit version in example, please change accordingly):
-
->>###### **sudo apt-get install gdebi-core **  
->>###### **wget https://download1.rstudio.org/rstudio-0.99.896-amd64.deb **  
->>###### **sudo gdebi -n rstudio-0.99.896-amd64.deb **  
->>###### **rm rstudio-0.99.896-amd64.deb **  
+You know what to do.
 
 4. Note: *The procedure follows the similar lines for previous versions of Ubuntu*
 
