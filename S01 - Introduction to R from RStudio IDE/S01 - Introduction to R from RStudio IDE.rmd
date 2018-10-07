@@ -1,23 +1,36 @@
+---
+title: 'Introduction to R for Data Science: Session 01: Introduction to R from RStudio IDE'
+author: "Goran S. Milovanovic, Phd"
+date: "October 07, 2018"
+output:
+  html_notebook:
+    code_folding: show
+    theme: simplex
+    toc: yes
+    toc_float: yes
+    toc_depth: 5
+  html_document:
+    toc: yes
+    toc_depth: 5
+---
+
 # Introduction to R for Data Science
 ### Session 01: Introduction to R from RStudio IDE
 
-11/07/2016, Belgrade, Serbia
+10/07/2018, Belgrade, Serbia
 
-Organized by: [Data Science Serbia](http//:www.datascience.rs) and [Startit](http://en.startit.rs)
+Organized by: [Dr Goran S. Milovanović](http//:www.exactness.net) and [Startit](http://en.startit.rs)
 
 ***
 
-## Lecturers
-
+## Lecturer
 
 ![](../img/GoranSMilovanovic.jpg)
 
-#### [Goran S. Milovanović](http://www.exactness.net), Phd  
-#### Data Science Mentor at [Springboard](https://www.springboard.com/workshops/data-science), [Data Science Serbia](http://www.datascience.rs)  
-![](../img/BrankoKovac.jpg)  
-
-#### [ing Branko Kovač](https://rs.linkedin.com/in/kovacbranko)
-#### Data Scientist @Tradecore, Data Science Mentor at [Springboard](https://www.springboard.com/workshops/data-science), [Data Science Serbia](http://www.datascience.rs)
+[Goran S. Milovanović](http://www.exactness.net), Phd
+- Owner, [DataKolektiv](https://www.linkedin.com/company/18515547)
+- Data Scientist for [Wikidata](https://www.wikidata.org) at [WMDE](https://wikimedia.de/)
+- Data Science Mentor at [Springboard](https://www.springboard.com/workshops/data-science)
 
 ***
 
@@ -73,18 +86,41 @@ Organized by: [Data Science Serbia](http//:www.datascience.rs) and [Startit](htt
 
 Ok. Now when we have our computing toy installed and ready, let's see what it is about.  
 
-```{r echo=T}
-# clear workspace
-rm(list=ls())
-# try this out:
+```{r echo = T}
+# - create a variable
+a <- 5
+print(a)
+```
+
+```{r echo = T}
+# - in Console:
+a
+```
+
+```{r echo = T}
+# - try this out:
 ls()
 ```
 
+```{r echo = T}
+# - clear workspace
+rm(list = ls())
+ls()
+```
+
+```{r echo = T}
+# - remove only one object
+a <- 17
+a
+rm(a)
+# - print(a)
+```
+
 Basically, R is an calculator:
-```{r echo=T}
-# R as a calculator
-2+2
-2/3-1+5
+```{r echo = T}
+# - R as a calculator
+2 + 2
+2/3 - 1 + 5
 a <- 1/3
 b = 7
 a + b
@@ -97,29 +133,40 @@ You need to know what's your working directory:
 getwd()
 ```
 
+Setting your working directory:
 ```{r echo=T}
-# save R object as .rds file
-saveRDS(a, "a.rds")
-a <- readRDS("a.rds")
+# - use setwd() to set your working directory
+# - setwd('path_to_your_working_directory')
+# - setwd(paste0(getwd(), '/_tempData'))
+getwd()
 ```
 
+Save as .Rds file:
+```{r echo=T}
+# - save R object as .rds file
+saveRDS(a, "a.rds")
+c <- readRDS("a.rds")
+print(c)
+```
+
+Save several objects as .RData:
 ```{r echo=T}
 # save several R objects as .RData file
-save(list = c("a", "b"), file = "obj.RData")
-
-# remove a, b
-rm(a,b)
-getwd()
-# load .RDatafile to R
+# - save several R objects as .RData file
+save(list = c("a", "b"), 
+     file = "obj.RData")
+# - remove a, b
+rm(a, b)
+# - load .RDatafile to R
 load(file = "obj.RData")
 ```
 
+Once again, list objects, clean up:
 ```{r echo=T}
-# list of loaded objects
+# - list of loaded objects
 ls()
-
-# remove all objects
-rm(list=ls())
+# - remove all objects
+rm(list = ls())
 ```
 
 ***
@@ -151,7 +198,7 @@ We will use many different R packages during the workshop. Here is a list of the
 
 install.packages("dplyr")
 
-```{r echo=T, results='hide'}
+```{r echo = T, results = 'hide'}
 # installing packages:
 # install.packages("dplyr") # replace "dplyr" with other package name
 installed.packages() # list of installed packages
@@ -160,163 +207,226 @@ installed.packages() # list of installed packages
 ***
 ### D. The Shape of Things to Come
 
-```{r echo=T}
-# The shape of things to come:
-numbers <- c(1,2,3,4,5)
+Data types:
+```{r echo = T}
+### --- The shape of things to come:
+numbers <- c(1, 2, 3, 4, 5)
+nums <- 1:5
 words <- c("data", "science", "r")
 boolean <- c(TRUE, FALSE)
 data("mtcars")
-head(mtcars,5)
+head(mtcars, 5)
 ```
 
-```{r echo=T}
-# define a function in R:
-
+Functions:
+```{r echo = T}
+# - define a function in R:
 factorial <- function(x) {
   if (x == 0 | x == 1) {
     return(1)
   }
   else {
-    return(x*factorial(x-1))
-    }
+    return(x * factorial(x - 1))
+  }
 }
+```
 
-# calls to factorial():
+Function call:
+```{r echo = T}
+# - calls to factorial():
 factorial(5)
+```
+
+```{r echo = T}
 factorial(10)
+```
+
+```{r echo = T}
 factorial(100)
+```
 
-# a vector of type numeric obtained from a sequence:
-x <- seq(0,30,1)
+```{r echo = T}
+# - a vector of type numeric obtained from a sequence:
+xVec <- seq(0, 30, 1)
+xVec
+```
 
-# applying the non-vectorized factorial() function to a vector x:
-xFactorials <- unlist(lapply(x, function(x) {factorial(x)}))
+Introducing the apply family:
+```{r echo = T}
+# - applying the non-vectorized factorial() function to a vector x:
+xFactorials <- sapply(xVec, factorial)
+xFactorials
+```
 
-# a {base} R plot
-plot(x,xFactorials,
+Sapply w. function definition:
+```{r echo = T}
+# - applying some other non-vectorized function to a vector:
+xSomething <- sapply(xVec, function(x) {
+  x <- x + 100
+})
+xSomething
+```
+
+Visualization:
+```{r echo = T}
+# - a {base} R plot
+plot(xVec, xFactorials,
      xlab = "Integers",
      ylab = "Factorials",
      main = "Insane Plot",
      cex.main = .85)
-lines(x,xFactorials, col="red")
+lines(xVec, xFactorials, col = "red")
+```
+
+
+R is a vector programming language. All programming languages dream of becoming vector languages one day. For example, to do vector programming in Python, you first need a package called NumPy to turn it into MATLAB, then a package named Pandas to turn it into R :)
+N.B. We love Python too and have the highest of respect only for the Python community in Data Science. But R is a "natural" vector programming language:
+``` {r echo = T}
+# - create 100 random deviates from the Uniform on [0,1]
+xUnif <- runif(100, 0, 1)
+xNorm <- rnorm(100, 5, .75)
+# - Hint: ?runif, ?rnorm == asking for help --> documentation
 ```
 
 ``` {r echo = T}
-# R is a vector programming language. All programming languages dream of becoming
-# vector languages one day. For example, to do vector programming in Python, you first need
-# a package called NumPy to turn it into MATLAB, then a package named Pandas to turn it into R.
-# Just kidding :) - we love Python too and have the highest of respect only for the
-# Python community in Data Science. But R is a "natural" vector programming language:
+# - ask for *each element in x* whether it is >= .5 or not:
+xUnif >= .5
+# - Where's the function? Isn't >= an operator?
+```
 
-# create 100 random deviates from the Uniform on [0,1]
-x <- runif(100,0,1)
+R is a functional programming language too. Thus:
+``` {r echo = T}
+logical1 <- '>='(xUnif, .5)
+logical1
+logical2 <- xUnif >= .5
+# - Now: which corresponding elements in logical1
+# - and logical 2 are different? 
+which(logical1 != logical2) # - none: integer(0)
+```
 
-# ask for *each element in x* whether it is >= .5 or not:
-x>=.5
-
-# Where's the function? Isn't >= an operator?
-# R is a functional programming language too. Thus:
-logical1 <- '>='(x,.5)
-logical2 <- x>=.5
-which(logical1 != logical2) # none: integer(0)
-
-# Back to vectorized functions in R; similarly, we have:
-x <- seq(2,100,2)
-x2 <- sqrt(x)
+Back to vectorized functions in R; similarly, we have:
+``` {r echo = T}
+xSeq <- seq(2, 100, 2)
+x2 <- sqrt(xSeq)
 x2
 ```
+
+
+### F. Stretching its legs w. a simple PCA example
 
 Ok. Let strech its legs now:
 
 ``` {r echo = T}
-# PCA
+### --- PCA example
 library(psych)
 library(FactoMineR)
-library(ggplot2)
-dataSet <- bfi[,1:25]
+data(bfi)
+head(bfi)
+dim(bfi)
+dataSet <- bfi[, 1:25]
 dim(dataSet)
-# replace NA w. respective column means
-for(i in 1:ncol(dataSet)){
+# - replace NA w. respective column means
+for (i in 1:ncol(dataSet)) {
   dataSet[is.na(dataSet[,i]), i] <- mean(dataSet[,i], na.rm = TRUE)
 }
 colnames(dataSet)
 ```
 
+The correlation matrix visualized w. {corrplot}:
 ``` {r echo}
-# plot correlation matrix
+# - plot correlation matrix
 library(corrplot)
 corrplot(cor(dataSet),
-         tl.col='black',
-         tl.cex=.75)
+         tl.col = 'black',
+         tl.cex = .75)
 ```
 
+Perform PCA w. PCA() from {factoMineR}; extract eigenvalues:
 ``` {r echo=T}
-# perform PCA w. PCA() from {factoMineR}
 pcaSolution <- PCA(dataSet,
-                   ncp=5,
-                   scale.unit=F,
-                   graph=FALSE)
-# Eigenvalues:
-eigenvalues <- pcaSolution$eig$eigenvalue
+                   ncp = 5,
+                   scale.unit = F,
+                   graph = FALSE)
+# - Eigenvalues:
+eigenvalues <- pcaSolution$eig[, 1]
 names(eigenvalues) <- paste("Component: ", seq(1,length(eigenvalues)), sep = "")
 eigenvalues
 ```
+
+Screeplot w. {ggplot2}
 ``` {r echo = T}
-# Screeplot:
+# - Screeplot:
 screePlot <- data.frame(Component = rownames(pcaSolution$eig),
-                        Eigenvalue = pcaSolution$eig$eigenvalue,
+                        Eigenvalue = eigenvalues,
                         stringsAsFactors = F)
+library(ggplot2)
+library(ggrepel)
 ggplot(screePlot,
-       aes(x = seq(1,length(pcaSolution$eig$eigenvalue),1),
-           y = Eigenvalue),
-       label = Component) +
-  geom_path(color="blue") +
-  geom_point(color="blue",size = 2) +
-  geom_point(color="white", size = 1.5) + 
+       aes(x = seq(1, length(eigenvalues), 1),
+           y = Eigenvalue, 
+           label = round(Eigenvalue, 2)
+           )
+       ) +
+  geom_path(color = "blue", size = .25) +
+  geom_point(color = "blue",size = 2) +
+  geom_point(color = "white", size = 1.5) + 
+  geom_text_repel(size = 3) + 
   xlab("Component") + 
   ggtitle("Screeplot") +
   theme_bw()
 ```
 
+Plot loadings on PC1 and PC2
 ``` {r echo = T}
-# Plot loadings on PC1 and PC2
-# get item coordinates
 coordinates <- pcaSolution$var$coord
-# compute loadings (dividing coordinates by sqrt(coord_eigenvalue))
+# - compute loadings (dividing coordinates by sqrt(coord_eigenvalue))
 for (i in 1:5) {
-  coordinates[,i] <- coordinates[,i]/sqrt(eigenvalues[i])
+  coordinates[, i] <- coordinates[, i]/sqrt(eigenvalues[i])
 }
-colnames(coordinates) <- paste("Component",seq(1,dim(coordinates)[2],1),sep="")
-category <- paste("Component ",unname(apply(coordinates,1,function(x){which(abs(x)==max(abs(x)))})),sep="")
-loading <- unname(apply(coordinates,1,function(x){x[which(abs(x)==max(abs(x)))]}))
-# prepare data.frame for {ggplot2}
+colnames(coordinates) <- paste("Component",
+                               seq(1, dim(coordinates)[2],1 ), sep = "")
+category <- paste("Component ", 
+                  unname(
+                    apply(coordinates, 1, function(x) {
+                      which(abs(x) == max(abs(x)))
+                      })
+                    ), 
+                  sep = "")
+loading <- unname(
+  apply(
+    coordinates, 1, function(x) {
+      x[which(abs(x) == max(abs(x)))]
+      })
+  )
+# - prepare data.frame for {ggplot2}
 plotTable <- as.data.frame(coordinates)
 plotTable$Category <- category
 plotTable$Loading <- loading
 plotTable$Label <- rownames(plotTable)
-# plot factor loadings w. {ggplot2}:
-# PCA Projection on Components 1 and 2
+# - plot factor loadings w. {ggplot2}:
+# - PCA Projection on Components 1 and 2
 ggplot(plotTable,aes(x = Component1,
                      y = Component2,
                      size = Loading,
                      fill = Category,
                      label = Label)) +
-  geom_point(color="black",shape=21,alpha=0.75) +
-  geom_text(hjust = 1.5, vjust = -1, size = 3.5) +
+  geom_point(color = "black", shape = 21, alpha = 0.75) +
+  geom_text_repel(size = 3) +
   theme_bw() +
   scale_size(range = c(1,6)) +
   scale_fill_brewer(palette = "Set1") +
-  theme(legend.position="right") +
+  theme(legend.position = "right") +
   theme(legend.key = element_rect(colour = NA)) +
-  theme(legend.key.size=unit(1,"cm")) +
-  theme(legend.background = element_rect(colour = "white", fill="white")) +
-  theme(panel.border = element_rect(linetype = "solid", colour = "white", fill="NA")) +
+  theme(legend.key.size = unit(1, "cm")) +
+  theme(legend.background = element_rect(colour = "white", fill = "white")) +
+  theme(panel.border = element_rect(linetype = "solid", colour = "white", fill = "NA")) +
   theme(panel.background = element_rect(fill = "white")) +
   theme(plot.background = element_blank()) +
-  theme(axis.text.x = element_text(size=11,colour = "black")) +
-  theme(axis.text.y = element_text(size=11,colour = "black")) +
+  theme(axis.text.x = element_text(size = 11,colour = "black")) +
+  theme(axis.text.y = element_text(size = 11,colour = "black")) +
   theme(panel.grid.minor = element_blank()) +
   theme(panel.grid.major = element_blank()) +
+  theme(plot.title = element_text(size = 12)) +
   xlab("Component 1") + ylab("Component 2") +
   ggtitle("PCA: Projection on Components 1 and 2\n")
 ```
@@ -329,33 +439,30 @@ ggplot(plotTable,aes(x = Component1,
                      size = Loading,
                      fill = Category,
                      label = Label)) +
-  geom_point(color="black",shape=21,alpha=0.75) +
-  geom_text(hjust = 1.5, vjust = -1, size = 3.5) +
+  geom_point(color = "black", shape = 21, alpha = 0.75) +
+  geom_text_repel(size = 3) +
   theme_bw() +
   scale_size(range = c(1,6)) +
   scale_fill_brewer(palette = "Set1") +
-  theme(legend.position="right") +
+  theme(legend.position = "right") +
   theme(legend.key = element_rect(colour = NA)) +
-  theme(legend.key.size=unit(1,"cm")) +
-  theme(legend.background = element_rect(colour = "white", fill="white")) +
-  theme(panel.border = element_rect(linetype = "solid", colour = "white", fill="NA")) +
+  theme(legend.key.size = unit(1, "cm")) +
+  theme(legend.background = element_rect(colour = "white", fill = "white")) +
+  theme(panel.border = element_rect(linetype = "solid", colour = "white", fill = "NA")) +
   theme(panel.background = element_rect(fill = "white")) +
   theme(plot.background = element_blank()) +
-  theme(axis.text.x = element_text(size=11,colour = "black")) +
-  theme(axis.text.y = element_text(size=11,colour = "black")) +
+  theme(axis.text.x = element_text(size = 11,colour = "black")) +
+  theme(axis.text.y = element_text(size = 11,colour = "black")) +
   theme(panel.grid.minor = element_blank()) +
   theme(panel.grid.major = element_blank()) +
-  xlab("Component 1") + ylab("Component 3") +
+  theme(plot.title = element_text(size = 12)) +
+  xlab("Component 1") + ylab("Component 2") +
   ggtitle("PCA: Projection on Components 1 and 3\n")
 ```
 
 ***
-## Readings for Session 2:
+### Readings for Session 2:
 
++ Chapters 1 to 3 from [R for Data Science, Garrett Grolemund Hadley Wickham](http://r4ds.had.co.nz/)
 + Chapters 1 to 5 from [Norman Matloff's The Art of R Programming](http://heather.cs.ucdavis.edu/~matloff/132/NSPpart.pdf)
 
-***
-
-#### [Data Science Serbia](http://www.datascience.rs) 2016.
-
-![](../img/DataScienceSerbiaLogo.png)
