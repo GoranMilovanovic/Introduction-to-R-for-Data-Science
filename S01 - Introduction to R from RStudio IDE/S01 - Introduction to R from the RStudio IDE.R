@@ -26,7 +26,9 @@ a
 # - try this out:
 ls()
 # - clear workspace
-rm(list = ls())
+rm(
+  list = ls()
+  )
 # - remove only one object
 a <- 17
 a

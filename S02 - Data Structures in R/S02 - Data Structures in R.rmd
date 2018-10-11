@@ -1,60 +1,71 @@
+---
+title: 'Introduction to R for Data Science: Session 02: Introduction to Data Structures in R'
+author: "Goran S. Milovanovic, Phd"
+date: "October 13, 2018"
+output:
+  html_notebook:
+    code_folding: show
+    theme: simplex
+    toc: yes
+    toc_float: yes
+    toc_depth: 5
+  html_document:
+    toc: yes
+    toc_depth: 5
+---
+
 # Introduction to R for Data Science
-### Session 02: Data Structures in R
+### Session 02: Introduction to Data Structures in R
 
-11/14/2016, Belgrade, Serbia
+10/13/2018, Belgrade, Serbia
 
-Organized by: [Data Science Serbia](http//:www.datascience.rs) and [Startit](http://en.startit.rs)
+Organized by: [Dr Goran S. Milovanović](http//:www.exactness.net) and [Startit](http://en.startit.rs)
 
 ***
 
-## Lecturers
-
+## Lecturer
 
 ![](../img/GoranSMilovanovic.jpg)
 
-#### [Goran S. Milovanović](http://www.exactness.net), Phd  
-#### Data Science Mentor at [Springboard](https://www.springboard.com/workshops/data-science), [Data Science Serbia](http://www.datascience.rs)  
-![](../img/BrankoKovac.jpg)  
 
-#### [ing Branko Kovač](https://rs.linkedin.com/in/kovacbranko)
-#### Data Scientist @Tradecore, Data Science Mentor at [Springboard](https://www.springboard.com/workshops/data-science), [Data Science Serbia](http://www.datascience.rs)
+[Goran S. Milovanović](http://www.exactness.net), Phd
+
+Owner, [DataKolektiv](https://www.linkedin.com/company/18515547); Data Scientist for [Wikidata](https://www.wikidata.org) at [WMDE](https://wikimedia.de/); Data Science Mentor at [Springboard](https://www.springboard.com/workshops/data-science)
+
 ***
 
 ### A. Data Types in R, Subsetting, and Coercion
 
 We are first going to introduce the elementary data types. Along the way, we will see how to work with various data structures in R, starting from simpler structures that encompas elements of one data type only (vectors and matrices), and towards the more complex objects that can handle multiple data types - like lists and data frames.
 
-``` {r echo=T}
-# clear all
-rm(list=ls())
-
-# libraries
+```{r echo = T}
+# - libraries
 library(datasets)
 
-# Let's start with some character vectors:
-char_vect <- character(length = 0) # empty character vect
+# - Let's start with some vectors:
+char_vect <- character(length = 0) # - empty character vect
 char_vect
 ```
 
 Zero-length vectors is the R default on vector creation: use `character(n)` or `character(length=n)` to create a vector of length n. Do not forget: unlike many other programming languages, **vector indexing in R starts from one (1)**, so the first element of your vector is `vector[1]`!
 
-``` {r echo=T}
+```{r echo = T}
 num_vect <- numeric(length = 10) # length can be != 0, but 0 is default value
 num_vect
 ```
 
-All zeroes, but length == 10! Let's meet the logical type:
+All zeroes, but length == 10. Let's meet the logical type:
 
-``` {r echo=T}
+```{r echo = T}
 log_vect <- logical(length = 3) # default value is FALSE
 log_vect
 ```
 
-The default value for numeric vectors is zero, while for logical vectors is False. You always need to type capital letters to adress logical constants of `FALSE` and `TRUE` in R, respectively, but you can abbreviate logicals as `T` or `F` (capital letters again!)
+The default value for numeric vectors is `0`, while for logical vectors is `FALSE`. You always need to type capital letters to adress logical constants of `FALSE` and `TRUE` in R, respectively, but you can abbreviate logicals as `T` or `F` (capital letters again!)
 
 Let's learn about `c()`:
 
-``` {r echo=T}
+```{r echo = T}
 # c() is commonly used to create vectors
 num_vect_2 <- c(1, 14, 2, NA, 999, 101) # numerics
 num_vect_2
@@ -62,62 +73,69 @@ num_vect_2
 
 We use `c()` a lot in R. Obviously, it is an in-built function, and what it does is called *concatenation*. For now, think of vector concatenation simply as of "putting things together in a new vector":
 
-``` {r echo=T}
+```{r echo = T}
 log_vect_2 <- c(TRUE, FALSE, FALSE, TRUE, TRUE, TRUE) # put some logicals together
 log_vect_2 # in a new vector called log_vect2
 ```
 
 Concatenating characters: **do not** confuse this with string concatenation in other programming languages:
 
-``` {r echo=T}
+```{r echo = T}
 char_vect_2 <- c("this", "is", "a", "data", "science", "workshop") # characters
 char_vect_2
 ```
 
 Function `length()` returns the size of the vector:
 
-``` {r echo=T}
+```{r echo = T}
 # Some useful functions
 length(char_vect)
 ```
 
 Everything in R is an *object*. Objects have *classes*, which is not the same as the type of the data. To ask R what class does a particular object belongs to, do `class(object)`:
 
-``` {r echo=T}
+```{r echo = T}
 class(num_vect)
 ```
 
 To learn about the data type, use `typeof()`:
 
-``` {r echo=T}
+```{r echo = T}
 typeof(num_vect)
 ```
 
+And finally, we also have `mode9()`:
+
+```{r echo = T}
+mode(num_vect)
+```
+
+The difference between `typeof()` and `mode()` reside on a rather deep level of the structure of R as a programming language. At this point, it is not really relevant for us. To learn more check out [this](https://stackoverflow.com/questions/35445112/what-is-the-difference-between-mode-and-class-in-r) Stack Overflow discussion.
+
 There are many "utilities" in {base}. For example, `duplicate()` will return TRUE wherever a vector element is a duplicate of some element that has appearead before, and FALSE wherever an element occurs for the first time: 
 
-``` {r echo=T}
+```{r echo = T}
 duplicated(log_vect_2)
 ```
 
 `is.something()` family of functions is very important:
 
-``` {r echo=T}
+```{r echo = T}
 # More useful functions
 is.numeric(num_vect)
 ```
 
-``` {r echo=T}
+```{r echo = T}
 is.character(num_vect)
 ```
 
-``` {r echo=T}
+```{r echo = T}
 as.logical(num_vect)
 ```
 
-``` {r echo=T}
+```{r echo = T}
 is.na(num_vect_2)
-
-# "is.x" functions check if something is x ornot. 
+# "is.x" functions check if something is x or not. 
 # Replace x with numeric, character, NA, etc.
 ```
 
@@ -125,20 +143,20 @@ All `is.something()` functions return logicals (`TRUE` or `FALSE`): `is.numeric(
 
 Now, how do we access vector components: a single vector element, or a range of elements?
 
-``` {r echo=T}
+```{r echo = T}
 # Vector subsetting in R
 char_vect_2[4] # select single element
 ```
 
-``` {r echo=T}
+```{r echo = T}
 log_vect_2[1:3] # or some interval
 ```
 
-``` {r echo=T}
+```{r echo = T}
 num_vect_2[3:length(num_vect_2)] # or use length() function to select an interval
 ```
 
-``` {r echo=T}
+```{r echo = T}
 # New objects can be created when subsetting
 test <- num_vect_2[-c(3,4)] # gives all except 3rd and 4th element
 test
@@ -146,34 +164,34 @@ test
 
 Some operators in R are enclosed by the percent sign `%`, like `%in%`:
 
-``` {r echo=T}
+```{r echo = T}
 test_2 <- num_vect_2 %in% test # operator %in% can be very useful
 test_2
 ```
 
-Later on, we will learn about `%`, `%>%`, and similarly looking operators. NOTE: They do not bear any *semantic* similarity necessarily.
+Later on, we will learn about `%`, `%>%`, and similarly looking things. NOTE: They do not bear any *semantic* similarity necessarily.
 
-``` {r echo=T}
+```{r echo = T}
 not_na <- num_vect_2[!is.na(num_vect_2)] # removing NAs
 not_na
 ```
 
 Vector sorting in R with `sort()` function:
 
-``` {r echo=T}
+```{r echo = T}
 # Vector ordering
 sort(test, decreasing = T) # using sort() function
 ```
 
 Or we can use `order()`:
 
-``` {r echo=T}
+```{r echo = T}
 test[order(test, decreasing = T)] # or with order() function
 ```
 
 The difference between `sort()` and `order()`:
 
-``` {r echo=T}
+```{r echo = T}
 # The difference between sort() and order():
 someVector <- c(7,8,1,2)
 sort(someVector, decreasing = T) # returns a vector sorted
@@ -181,34 +199,34 @@ sort(someVector, decreasing = T) # returns a vector sorted
 
 In R, `sort()` returns the input vector sorted, while `order()` returns the indices by which the input vector should be sorted:
 
-``` {r echo=T}
+```{r echo = T}
 order(someVector, decreasing = T)
 ```
 
 Producing vector sequences:
 
-``` {r echo=T}
+```{r echo = T}
 # Vector sequences
-seq(1,22,by = 2) # seq is for "sequence"
+seq(1, 22,by = 2) # seq is for "sequence"
 ```
 
 With `rep()`:
 
-``` {r echo=T}
+```{r echo = T}
 rep(1, 4) # rep means: "replicate"
 ```
 
-``` {r echo=T}
+```{r echo = T}
 num_vect_2
 ```
 
-``` {r echo=T}
+```{r echo = T}
 rep(num_vect_2, 2) # replicate num_vect_2, 2 times
 ```
 
 Again, producing vectors by concatenation:
 
-``` {r echo=T}
+```{r echo = T}
 # Concatenation
 new_num_vect <- c(num_vect, num_vect_2) # using 2 vectors to create new one
 new_num_vect
@@ -216,19 +234,19 @@ new_num_vect
 
 Be very, very careful when it comes to **coercion** in R: a forcefull change of data type.
 
-``` {r echo=T}
+```{r echo = T}
 new_combo_vect <- c(num_vect_2, log_vect) # combination of num and log vector
 new_combo_vect # all numbers? false to zero? coercion in action
 ```
 
 Coercing *numeric* ("younger") to *character* ("older") data type:
 
-``` {r echo=T}
+```{r echo = T}
 new_combo_vect_2 <- c(char_vect_2, num_vect_2) #works as well
 new_combo_vect_2 # where are the numbers?
 ```
 
-``` {r echo=T}
+```{r echo = T}
 class(new_combo_vect_2) # all characters: coercion in R
 ```
 
@@ -240,60 +258,64 @@ Coercion order in R is as follows (reading "<" as "under coercion becomes" from 
 
 Matrix is a special kind of vector with dimension of two. One way to produce a matrix in R is to use the `matrix()` function:
 
-``` {r echo=T}
+```{r echo = T}
 # Matrices in R
-matr <- matrix(data = c(1,3,5,7,NA,11), nrow = 2, ncol = 3) # 2x3 matrix
+matr <- matrix(data = c(1, 3, 5, 7, NA, 11), 
+               nrow = 2, 
+               ncol = 3) # 2x3 matrix
 matr
 ```
 
 Vectors in R are **dimensionless**; matrices, as mentioned, have a dimension of two:
 
-``` {r echo=T}
-dim(c(1,2,2,4))
+```{r echo = T}
+dim(c(1, 2, 2, 4))
 ```
 
-``` {r echo=T}
+```{r echo = T}
 dim(matr)
 ```
 
 R also supports the `array` type, which represents vectors that can have more than two dimensions; we will not study arrays here. Please mind the difference between the class of the matrix object and its type: 
 
-``` {r echo=T}
+```{r echo = T}
 class(matr) # yes, it's a matrix
 ```
 
-``` {r echo=T}
+```{r echo = T}
 typeof(matr) # double as expected 
 ```
 
 In R, vectors, matrices, and arrays can encompass elements (components) of only one data type. Lists in R (see below) can encompass elements of different data types. Let's start subsetting matrices:
 
-``` {r echo=T}
+```{r echo = T}
 matr[,2] # 2nd column
 ```
 
-``` {r echo=T}
+```{r echo = T}
 # This will produce an error:
 # matr[3,] # oops, out of bounds, there's no 3rd row
 ```
 
-``` {r echo=T}
+```{r echo = T}
 matr[2,3] # element in 2nd row and 3rd column
 ```
 
-``` {r echo=T}
-matr_2 <- matrix(data = c(1,3,5,"7",NA,11), nrow = 2, ncol = 3) # another 2x3 matrix
+```{r echo = T}
+matr_2 <- matrix(data = c(1, 3, 5,"7", NA, 11), 
+                 nrow = 2, 
+                 ncol = 3) # another 2x3 matrix
 ```
 
-``` {r echo=T}
+```{r echo = T}
 class(matr_2) # matrix again
 ```
 
-``` {r echo=T}
+```{r echo = T}
 typeof(matr_2) # but not double anymore, type conversion in action!
 ```
 
-``` {r echo=T}
+```{r echo = T}
 t(matr_2) # transponed matr_2
 ```
 
@@ -305,57 +327,57 @@ R is a [vector programming language](https://en.wikipedia.org/wiki/Array_program
 
 Let's take a closer look at vector arithmetics and algebra in R.
 
-``` {r echo=T}
+```{r echo = T}
 arr1 <- seq(2,20,2)
 arr2 <- seq(1,19,2)
 ```
 
 If we simply use the multiplicaton operator as usual, like in `a*b`, R will perform an element-wise multiplication of two vectors:
 
-``` {r echo=T}
+```{r echo = T}
 # get vectorized in R: element-wise multiplication:
 arr1 * arr2
 ```
 
 `+`, `-`, `/`, `^` and similar all operate element-wise over vectors when used in a traditional way:
 
-``` {r echo=T}
+```{r echo = T}
 # similar:
 arr1 + arr2
 ```
 
-``` {r echo=T}
+```{r echo = T}
 arr1 - arr2
 ```
 
-``` {r echo=T}
+```{r echo = T}
 arr1 / arr2
 ```
 
-``` {r echo=T}
+```{r echo = T}
 arr1 ^ arr2
 ```
 
 **Never forget** about *recylcing* in R. Example: we have one numeric of length 3 and the other of length 4:
 
-``` {r echo=T}
-n1 <- c(1,2,3)
-n2 <- c(4,5,6,7)
-n1+n2
+```{r echo = T}
+n1 <- c(1, 2, 3)
+n2 <- c(4, 5, 6, 7)
+n1 + n2
 ```
 
 Where does `8` come from in the resulting vector? It is the consequence of recycling: once the elements of the shorter vector have been exhausted, R started looping over it from the begining.
 
 Now let's see how to do elementary linear algebra in R.
 
-``` {r echo=T}
+```{r echo = T}
 # scalar ("inner", "dot") product in R:
 arr1 %*% arr2
 ```
 
 In the previous line, we have used `%*%` instead of `*`. This is how you call for a vector product from R.
 
-``` {r echo=T}
+```{r echo = T}
 # again:
 t(arr1) %*% arr2
 # NOTE: see https://stat.ethz.ch/R-manual/R-devel/library/base/html/matmult.html
@@ -363,13 +385,13 @@ t(arr1) %*% arr2
 
 Relax: `t(arr1) %*% arr2` and `arr1 %*% arr2` lead to the same results since R has automatically (and silently) transposed the left vector in the later expression. You can use `crossprod()` to make this computation faster:
 
-``` {r echo=T}
+```{r echo = T}
 crossprod(arr1,arr2) # faster
 ```
 
 Since the result of this operation is returned as a matrix, we can use `drop()` to delete the dimension with one level only and get to a "scalar" value (N.B. There are no scalar values in R only; everything is a vector):
 
-``` {r echo=T}
+```{r echo = T}
 # as scalar:
 drop(crossprod(arr1, arr2))
 # do: ?drop
@@ -377,7 +399,7 @@ drop(crossprod(arr1, arr2))
 
 What about multiplying x1 with transpose(x2)? The fast way:
 
-``` {r echo=T}
+```{r echo = T}
 # tcrossproduct() in R:
 arr1
 t(arr2)
@@ -386,97 +408,109 @@ tcrossprod(arr1, arr2) # faster
 
 And here's the less eficient way (leading to the same result, of course):
 
-``` {r echo=T}
+```{r echo = T}
 # or:
 arr1 %*% t(arr2) # slower
 ```
 
-``` {r echo=T}
+```{r echo = T}
 # And we now learned that R defaults to...
 arr1
 ```
 
-``` {r echo=T}
+```{r echo = T}
 # ... column vectors - because only this is a row vector:
 t(arr1)
 ```
 
 Let's practice multiplying vectors and matrices a bit:
 
-``` {r echo=T}
+```{r echo = T}
 # Multplying vectors and matrices
 arr1 <- 1:4
 arr1
 ```
 
-``` {r echo=T}
+```{r echo = T}
 arr2 <- matrix(rep(1:4,4),ncol = 4,byrow = T)
 arr2
 ```
 
-``` {r echo=T}
+```{r echo = T}
 arr1 * arr2 # element-wise
 ```
 
-``` {r echo=T}
+```{r echo = T}
 # crossprod()
 arr1 %*% arr2
 ```
 
-``` {r echo=T}
+```{r echo = T}
 t(arr1)
+```
+
+```{r echo = T}
 arr2
+```
+
+```{r echo = T}
 t(arr1) %*% arr2
 ```
 
-``` {r echo=T}
+```{r echo = T}
 crossprod(arr1, arr2)
 ```
 
-``` {r echo=T}
+```{r echo = T}
 # tcrossprod()
 arr1 %*% t(arr2)
 ```
 
-``` {r echo=T}
+```{r echo = T}
 arr1
+```
+
+```{r echo = T}
 t(arr2)
+```
+
+```{r echo = T}
 tcrossprod(arr1, arr2)
 ```
 
-``` {r echo=T}
+```{r echo = T}
 # Multiplying matrices
 arr1 <- matrix(rep(2,16),ncol = 4,byrow = T)
 arr1
 ```
 
-``` {r echo=T}
+```{r echo = T}
 # element-wise:
 arr1 * arr2
 ```
 
-``` {r echo=T}
+```{r echo = T}
 # t(arr1) %*% arr2
 crossprod(arr1,arr2)
 ```
 
-``` {r echo=T}
+```{r echo = T}
 # and this does the same:
 arr1 %*% arr2
 ```
 
-``` {r echo=T}
+```{r echo = T}
 tcrossprod(arr1,arr2)
 ```
 
-``` {r echo=T}
+```{r echo = T}
 # which is, again, the same as:
 arr1 %*% t(arr2)
 ```
 
 You can use `%o% to produce an *outer product* of two vectors:
 
-``` {r echo=T}
+```{r echo = T}
 # If a and b are two numeric arrays, their outer product is an array 
 # whose dimension vector is obtained by concatenating their two dimension 
 # vectors (order is important), and whose data vector is got by forming
@@ -484,14 +518,14 @@ You can use `%o% to produce an *outer product* of two vectors:
 # [source: https://cran.r-project.org/doc/manuals/r-patched/R-intro.html#The-outer-product-of-two-arrays]
 ```
 
-``` {r echo=T}
+```{r echo = T}
 # outter product of two vectors:
 a <- 1:4
 b <- 1:3
 a %o% b
 ```
 
-``` {r echo=T}
+```{r echo = T}
 # or:
 outer(a,b,"*")
 ```
@@ -502,81 +536,81 @@ outer(a,b,"*")
 
 As already mentioned, R vectors, matrices, and arrays encompass only elements of the same data type. The data structure - essentialy a vector, again - that can encompass as many different data types as you prefer is a `list`:
 
-``` {r echo=T}
+```{r echo = T}
 # We use lists a lot in R:
 list_1 <- list(num_vect_2, char_vect_2, log_vect_2) # this is a list
 list_1 # this is our list
 ```
 Notice the way list is represented, because this is important to understand list subsetting. The first element of the list is a numeric vector, and that first element of the list is [[1]] - we use **double brackets** here. The difference between using `[[` and `[` will soon become transparent.
 
-``` {r echo=T}
+```{r echo = T}
 str(list_1) # about a list
 ```
 
-``` {r echo=T}
+```{r echo = T}
 length(list_1)
 ```
 
-``` {r echo=T}
+```{r echo = T}
 as.list(char_vect_2) # another way to create a list
 ```
 
 
-``` {r echo=T}
+```{r echo = T}
 # Lists manipulation
 names(list_1) <- c("numeric", "words", "logical")
 list_1
 ```
 
-``` {r echo=T}
+```{r echo = T}
 list_1[3] # 3rd element?
 ```
 
-``` {r echo=T}
+```{r echo = T}
 list_1[[3]] # 3rd element?
 ```
 
-``` {r echo=T}
+```{r echo = T}
 is.list(list_1[3]) # is this a list?
 ```
 
-``` {r echo=T}
+```{r echo = T}
 is.list(list_1[[3]]) # and this?
 ```
 
-``` {r echo=T}
+```{r echo = T}
 class(list_1[[3]]) # also a list? hm?
 ```
 
-``` {r echo=T}
+```{r echo = T}
 list_1$words # we can also extract an element this way
 ```
 
-``` {r echo=T}
+```{r echo = T}
 list_1[["words"]] # or even like this
 ```
 
-``` {r echo=T}
+```{r echo = T}
 length(list_1$words) # 2 as expected
 ```
 
-``` {r echo=T}
+```{r echo = T}
 list_1[["words"]][1] # digging even deeper
 ```
 
-``` {r echo=T}
+```{r echo = T}
 list_1$new_elem <- c(TRUE, FALSE, FALSE, TRUE) # add new element
 length(list_1) # now this list has 4 elements
 ```
 
-``` {r echo=T}
+```{r echo = T}
 list_1$new_elem <- NULL # but we can remove it easily
 list_1
 ```
 
 Use `unlist()` to "flatten" the list into a vector:
 
-``` {r echo=T}
+```{r echo = T}
 new_vect <- unlist(list_1) # creating a vector from list: watch the names
 new_vect
 ```
@@ -591,7 +625,7 @@ Ok. And now for the "real thing": `data.frame` objects in R. As you will find ou
 
 In R, `data.frame` is like a *spreadsheet*: it has rows and columns, so it's basically a matrix-like object; however, unlike in matrices, each column in a `data.frame` can have its own data type.
 
-``` {r echo=T}
+```{r echo = T}
 # Introducing data frames in R
 # data
 data("mtcars")
@@ -601,82 +635,82 @@ data("mtcars")
 
 Use `str()` on a `data.frame` to obtain informaton on the content of its columns:
 
-``` {r echo=T}
+```{r echo = T}
 # Some useful information about data frames
 str(mtcars) # lets see object structure
 ```
 
 Use `summary()` to obtain essential descriptive statistics for each variable in a `data.frame`:
 
-``` {r echo=T}
+```{r echo = T}
 summary(mtcars) # summary data frame information
 ```
 
-``` {r echo=T}
+```{r echo = T}
 colnames(mtcars) # column names
 ```
 
 Take a sneak-peek of the first few rows with `head()`:
 
-``` {r echo=T}
+```{r echo = T}
 head(mtcars) # see first 6 (by default) rows
 ```
 
 `tail()`, can you imagine, does the following:
 
-``` {r echo=T}
+```{r echo = T}
 tail(mtcars, 10) # see last 10 rows
 ```
 
-``` {r echo=T}
+```{r echo = T}
 # Think of data frame columns as vectors! Because they are!
 mean(mtcars$mpg) # mean of mtcars mpg (miles per galon) column
 ```
 
-``` {r echo=T}
+```{r echo = T}
 median(mtcars$cyl) # median of mtcars cyl (cylinders) column
 ```
 
 You can subset `data.frame` in the same way as you would subset a matrix:
 
-``` {r echo=T}
+```{r echo = T}
 # Lets do some data frame subsetting
 mtcars[-1, ] # first row out
 ```
 
-``` {r echo=T}
+```{r echo = T}
 mtcars[ ,-1] # first column out
 ```
 
-``` {r echo=T}
+```{r echo = T}
 mtcars[c(1,3)] # keeping 1st and 3rd column only
 ```
 
-``` {r echo=T}
+```{r echo = T}
 mtcars[-c(1,3)] # removing 1st and 3rd column
 ```
 
 Or, you can also do this:
 
-``` {r echo=T}
+```{r echo = T}
 subset(mtcars, mpg < 19) # this is one way (and it can be slow!)
 ```
 
-``` {r echo=T}
+```{r echo = T}
 mtcars[mtcars$mpg < 19, ] # this is another one (faster)
 ```
 
-``` {r echo=T}
+```{r echo = T}
 mtcars[which(mtcars$mpg < 19), ] # and another one (usually even more faster)
 ```
 
-``` {r echo=T}
+```{r echo = T}
 mtcars[mtcars$mpg > 20 & mtcars$am == 1, ] # multiple conditions
 ```
 
 You can subset a `data.frame` in various ways. However, a somewhat canonical form of subsetting is to use `$` to select the column, and then `[` to go after a desired row, like in: `mtcars$mpg[2]` (try it out yourself).
 
-``` {r echo=T}
+```{r echo = T}
 # Data frame transformations
 mtcars$trans <- ifelse(mtcars$am == 0, "automatic", "manual") # we can add new colums
 mtcars$trans
@@ -684,39 +718,39 @@ mtcars$trans
 
 To remove a column from a `data.frame`, assign it a value of `NULL`: 
 
-``` {r echo=T}
+```{r echo = T}
 mtcars$trans <- NULL # or we can remove them
 ```
 
 Changing column order:
 
-``` {r echo=T}
+```{r echo = T}
 mtcars[c(1:3,11,4,7,5:6,8:10)] # this way we change column order
 ```
 
 Separating a `data.frame` into two smaller:
 
-``` {r echo=T}
+```{r echo = T}
 # Separation and joining of data frames
 low_mpg <- mtcars[mtcars$mpg < median(mtcars$mpg), ] # new data frame with mpg < med(mpg)
 low_mpg
 ```
 
-``` {r echo=T}
+```{r echo = T}
 high_mpg <- mtcars[mtcars$mpg >= median(mtcars$mpg), ] # new data frame with mpg >= med(mpg)
 high_mpg
 ```
 
 `rbind()` in R will join two data frames by matching their rows; both input data frames *must have the same number of rows* in order for `rbind()` to work (you can also experiment with `cbind()` if you like - the name of the function should be suggestive enough):
 
-``` {r echo=T}
+```{r echo = T}
 mpg_bind <- rbind(low_mpg, high_mpg) # combine 2 data frames with same columns
 mpg_bind
 ```
 
 Let's create a new `data.frame` from random data:
 
-``` {r echo=T}
+```{r echo = T}
 car_condition <- data.frame(sample(c("old","new"), replace = T, size = nrow(mpg_bind)))
 car_condition # creating random data frame with "old" and "new" values
 ```
@@ -725,19 +759,19 @@ Use `?sample` to find out more about this important R function.
 
 Now, assigning and chaning row and column names with `rownames()` and `colnames()`
 
-``` {r echo=T}
+```{r echo = T}
 colnames(car_condition) <- "condition" # for all kinds of objects
 head(car_condition)
 ```
 
-``` {r echo=T}
+```{r echo = T}
 rownames(car_condition) <- rownames(mtcars) # use row names of one data frame
 head(car_condition)
 # as row names of another
 ```
 Finally, here's what `cbind()` can accomplish:
 
-``` {r echo=T}
+```{r echo = T}
 mpg_join <- cbind(mpg_bind, car_condition) # or combine data frames like this
 mpg_join
 ```
@@ -745,12 +779,10 @@ mpg_join
 ***
 ## Readings for Session 3:
 
++ Chapters 4 to 8 from [R for Data Science, Garrett Grolemund Hadley Wickham](http://r4ds.had.co.nz/)
+
 + Chapter 6 (Data Frames) from [Norman Matloff's The Art of R Programming](http://heather.cs.ucdavis.edu/~matloff/132/NSPpart.pdf)
 
 + Chapter 8 (R Programming Structures) from [Norman Matloff's The Art of R Programming](http://heather.cs.ucdavis.edu/~matloff/132/NSPpart.pdf)
 
 
-***
-#### [Data Science Serbia](http://www.datascience.rs) 2016.
-
-![](../img/DataScienceSerbiaLogo.png)
